@@ -108,11 +108,19 @@ const isActive = (href: string) =>
     gap: 1.1rem;
     padding: 1.1rem;
     background: var(--surface);
-    border-inline-start: 1px solid var(--border);
+    border-inline-start: 1px solid color-mix(in oklab, var(--gold) 36%, var(--border));
     box-shadow: var(--shadow-lg);
     transform: translateX(100%);
     transition: transform var(--dur-slow) var(--ease-soft);
     overflow-y: auto;
+  }
+  /* 抽屉侧栏：深海藏蓝纵向渐变 */
+  .dark .drawer-panel {
+    background: linear-gradient(
+      180deg,
+      rgb(24 40 72 / 0.88),
+      rgb(15 32 64 / 0.96)
+    );
   }
   .drawer.is-open .drawer-panel {
     transform: none;

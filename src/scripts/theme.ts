@@ -1,9 +1,10 @@
 /**
  * 主题切换。
  *
- * 三态模型：light / dark / auto。auto 跟随系统并实时响应系统变化。
+ * 三态模型：light / dark / auto。
+ * 默认（auto）= 深海藏蓝工坊（dark）；仅显式选择 light 时进入昼间奶白。
  * 真正的"当前是亮还是暗"由 <html class="dark"> 决定，
- * 用户的显式选择存 localStorage，优先级高于系统。
+ * 用户的显式选择存 localStorage，优先级高于一切。
  */
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
@@ -20,12 +21,10 @@ export function getStoredTheme(): ThemeMode {
   }
 }
 
-/** 给定模式解析出实际生效的明暗 */
+/** 给定模式解析出实际生效的明暗；auto 默认深海藏蓝工坊（dark） */
 export function resolveTheme(mode: ThemeMode): 'light' | 'dark' {
   if (mode !== 'auto') return mode;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return 'dark';
 }
 
 /** 应用到 DOM：切 class + 同步 theme-color，供移动端浏览器 UI 着色 */
@@ -40,7 +39,7 @@ export function applyTheme(mode: ThemeMode): 'light' | 'dark' {
     'meta[name="theme-color"]',
   );
   if (meta) {
-    meta.content = resolved === 'dark' ? '#0D1714' : '#F7F9F6';
+    meta.content = resolved === 'dark' ? '#0F2040' : '#F8F5F0';
   }
 
   return resolved;
@@ -67,12 +66,7 @@ export function toggleTheme() {
   setTheme(current === 'dark' ? 'light' : 'dark');
 }
 
-/** 初始化：绑定系统主题变化监听，仅在 auto 模式下响应 */
+/** 初始化：应用当前主题（auto 已固定解析为 dark，无需系统监听） */
 export function initTheme() {
-  const media = window.matchMedia('(prefers-color-scheme: dark)');
-  const onSystemChange = () => {
-    if (getStoredTheme() === 'auto') applyTheme('auto');
-  };
-  media.addEventListener('change', onSystemChange);
   applyTheme(getStoredTheme());
 }

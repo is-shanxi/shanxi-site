@@ -60,8 +60,8 @@ export const SITE = {
   shortTitle: '山兮',
   description:
     '一个后端方向软件工程学生的自留地 —— 记录代码、生活与那些微小而确定的快乐。',
-  /** 站点主题色，用于 <meta name="theme-color"> 与 PWA */
-  themeColor: { light: '#F8EFD4', dark: '#08122E' },
+  /** 站点主题色，用于 <meta name="theme-color"> 与 PWA：藏蓝工坊 / 奶白昼间 */
+  themeColor: { light: '#F8F5F0', dark: '#0F2040' },
   lang: 'zh-CN',
   /** OpenGraph 语言标记 */
   ogLocale: 'zh_CN',
