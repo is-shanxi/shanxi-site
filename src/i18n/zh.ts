@@ -46,7 +46,6 @@ export const zh = {
   'home.greeting.afternoon': '下午好',
   'home.greeting.evening': '晚上好',
   'home.greeting.night': '夜深了',
-  'home.scrollHint': '向下滚动',
   'home.latestPosts': '最新文章',
   'home.featuredProjects': '精选作品',
   'home.recentNotes': '最近碎碎念',
