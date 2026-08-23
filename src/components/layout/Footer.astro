@@ -79,6 +79,19 @@ const year = new Date().getFullYear();
         {t('footer.poweredBy')}
       </p>
     </div>
+
+    {/* CC BY-NC-SA 4.0 署名链：鲸鱼娘立绘与宫殿背景素材的完整创作链（插件 NOTICE 要求） */}
+    <p class="maid-notice">
+      皮肤素材：鲸鱼娘角色 ©
+      <a href="https://www.pixiv.net/users/62155430" target="_blank" rel="noopener noreferrer">上善</a>
+      · 女仆鲸鱼娘二创 ©
+      <a href="https://www.pixiv.net/users/18604994" target="_blank" rel="noopener noreferrer">zipzip</a>
+      · 皮肤设计
+      <a href="https://github.com/Small-tailqwq/dsh-deep-whale" target="_blank" rel="noopener noreferrer">Small-tailqwq/dsh-deep-whale</a>
+      （maid-atelier）· 按
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
+      授权使用
+    </p>
   </div>
 </footer>
 
@@ -198,5 +211,24 @@ const year = new Date().getFullYear();
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+  }
+
+  .maid-notice {
+    max-inline-size: var(--content-max);
+    margin-inline: auto;
+    margin-block-start: 0.9rem;
+    padding: 0 clamp(1rem, 4vw, 2rem) 1rem;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    color: var(--text-subtle);
+    text-align: center;
+  }
+  .maid-notice a {
+    color: var(--text-muted);
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+  }
+  .maid-notice a:hover {
+    color: var(--brand-hover);
   }
 </style>
