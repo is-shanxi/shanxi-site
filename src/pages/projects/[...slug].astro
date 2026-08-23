@@ -1,0 +1,247 @@
+---
+/**
+ * 作品详情页 —— 流式布局。
+ * 顶部信息卡（状态 / 周期 / 角色 / 技术栈 / 外链）+ Markdown 正文。
+ */
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { getProjects } from '@/lib/content';
+import { useTranslations } from '@/i18n';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+};
+
+const { project } = Astro.props;
+const t = useTranslations();
+const { data } = project;
+const { Content } = await render(project);
+
+const statusLabel =
+  data.status === 'active'
+    ? t('projects.status.active')
+    : data.status === 'wip'
+      ? t('projects.status.wip')
+      : t('projects.status.archived');
+---
+
+<BaseLayout title={data.title} description={data.description} type="article">
+  <article
+    class="proj"
+    style={`--proj-accent:var(--note-${data.accent}-br); --proj-bg:var(--note-${data.accent}-bg)`}
+  >
+    <header class="proj-head">
+      <a class="proj-back link-underline" href="/projects">
+        <Icon name="arrow-right" size={14} class="flip" />
+        {t('projects.title')}
+      </a>
+
+      <div class="proj-title-row">
+        <h1 class="proj-title">{data.title}</h1>
+        <span class={`status-badge status-${data.status}`}>{statusLabel}</span>
+      </div>
+
+      <p class="proj-desc">{data.description}</p>
+
+      <dl class="proj-facts">
+        <div class="fact">
+          <dt><Icon name="calendar" size={13} /> 周期</dt>
+          <dd>{data.period}</dd>
+        </div>
+        <div class="fact">
+          <dt><Icon name="user" size={13} /> 角色</dt>
+          <dd>{data.role}</dd>
+        </div>
+        <div class="fact fact-wide">
+          <dt><Icon name="code" size={13} /> {t('projects.stack')}</dt>
+          <dd class="fact-stack">
+            {data.stack.map((s) => <span class="chip chip-neutral">{s}</span>)}
+          </dd>
+        </div>
+      </dl>
+
+      {
+        data.highlights.length > 0 && (
+          <ul class="proj-highlights">
+            {data.highlights.map((h) => (
+              <li>
+                <Icon name="check" size={14} />
+                {h}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      <div class="proj-links">
+        {
+          data.repo && (
+            <a class="btn btn-ghost" href={data.repo} target="_blank" rel="noopener noreferrer">
+              <Icon name="github" size={16} />
+              {t('projects.viewSource')}
+            </a>
+          )
+        }
+        {
+          data.demo && (
+            <a class="btn btn-primary" href={data.demo} target="_blank" rel="noopener noreferrer">
+              <Icon name="link" size={16} />
+              {t('projects.viewLive')}
+            </a>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="prose proj-content">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .proj {
+    inline-size: 100%;
+    max-width: 56rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+    padding-block: clamp(1.4rem, 3vw, 2.2rem) clamp(3rem, 6vw, 4rem);
+  }
+
+  .proj-head {
+    position: relative;
+    padding: 1.4rem 1.5rem 1.5rem;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border);
+    border-inline-start: 4px solid var(--proj-accent);
+    background: linear-gradient(
+      135deg,
+      var(--proj-bg),
+      var(--surface) 62%
+    );
+    overflow: hidden;
+  }
+
+  .proj-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .flip {
+    transform: rotate(180deg);
+  }
+
+  .proj-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-block-start: 0.8rem;
+  }
+  .proj-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2.05rem);
+    font-weight: 720;
+    letter-spacing: -0.012em;
+    color: var(--text);
+  }
+  .status-badge {
+    padding: 0.18rem 0.65rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    border-radius: var(--r-full);
+  }
+  .status-active {
+    color: var(--brand-hover);
+    background: var(--brand-soft);
+  }
+  .status-wip {
+    color: var(--warning);
+    background: color-mix(in oklab, var(--warning) 18%, transparent);
+  }
+  .status-archived {
+    color: var(--text-muted);
+    background: color-mix(in oklab, var(--text-muted) 15%, transparent);
+  }
+
+  .proj-desc {
+    margin: 0.7rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+  }
+
+  .proj-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.8rem 1.4rem;
+    margin: 1.1rem 0 0;
+    padding-block-start: 1rem;
+    border-block-start: 1px dashed var(--border);
+  }
+  .fact-wide {
+    grid-column: 1 / -1;
+  }
+  .fact dt {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.74rem;
+    font-weight: 620;
+    color: var(--text-subtle);
+  }
+  .fact dd {
+    margin: 0.3rem 0 0;
+    font-size: 0.87rem;
+    color: var(--text);
+  }
+  .fact-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .proj-highlights {
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.42rem;
+    background: color-mix(in oklab, var(--surface) 70%, transparent);
+    border-radius: var(--r-sm);
+  }
+  .proj-highlights li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.87rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .proj-highlights :global(svg) {
+    color: var(--brand);
+    flex: none;
+    margin-block-start: 0.22rem;
+  }
+
+  .proj-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-block-start: 1.2rem;
+  }
+
+  .proj-content {
+    margin-block-start: clamp(1.6rem, 3vw, 2.4rem);
+  }
+</style>

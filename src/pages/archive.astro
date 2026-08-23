@@ -1,0 +1,241 @@
+---
+/**
+ * 归档 —— 按年份分组的全部文章。
+ * 纯时间序（置顶不参与），一屏看完写过什么。
+ * 支持 ?date=YYYY-MM-DD 按当日筛选（日历组件点击有文章的日期会带此参数跳转）。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { getPostsByDate } from '@/lib/content';
+import { useTranslations } from '@/i18n';
+import { formatDateShort, toISODate, groupByYear } from '@/lib/utils';
+
+const t = useTranslations();
+const posts = await getPostsByDate();
+
+// 日期筛选：从 URL 读取 date 参数，仅在命中时过滤
+const dateParam = Astro.url.searchParams.get('date');
+const filtered = dateParam
+  ? posts.filter((p) => toISODate(p.data.published) === dateParam)
+  : posts;
+const years = groupByYear(filtered, (p) => p.data.published);
+---
+
+<PageLayout title={t('archive.title')} description={t('archive.subtitle')}>
+  <PageHeader
+    title={t('archive.title')}
+    subtitle={t('archive.subtitle')}
+    icon="archive"
+    meta={t('blog.postCount', { n: filtered.length })}
+  />
+
+  {
+    dateParam && (
+      <div class="filter-bar reveal">
+        <Icon name="calendar" size={16} />
+        <span class="filter-text">{t('archive.filteredBy', { date: dateParam })}</span>
+        <a class="filter-clear" href="/archive">
+          <Icon name="close" size={14} />
+          {t('archive.clearFilter')}
+        </a>
+      </div>
+    )
+  }
+
+  <div class="archive">
+    {
+      years.map((group) => (
+        <section class="year-block reveal">
+          <h2 class="year-head">
+            <span class="year-num">{group.year}</span>
+            <span class="year-line" />
+            <span class="year-count">{t('archive.yearCount', { n: group.items.length })}</span>
+          </h2>
+
+          <ul class="year-list">
+            {group.items.map((post) => (
+              <li class="ar-item">
+                <a class="ar-link" href={`/blog/${post.id}`}>
+                  <time class="ar-date" datetime={toISODate(post.data.published)}>
+                    {formatDateShort(post.data.published)}
+                  </time>
+                  <span class="ar-dot" aria-hidden="true" />
+                  <span class="ar-title">{post.data.title}</span>
+                  <span class="ar-cat">{post.data.category}</span>
+                  <Icon name="arrow-right" size={14} class="ar-arrow" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</PageLayout>
+
+<style>
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.65rem 0.95rem;
+    border-radius: var(--r-md);
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+    font-size: 0.88rem;
+    font-weight: 560;
+  }
+  .filter-bar :global(svg) {
+    flex: none;
+  }
+  .filter-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .filter-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--r-full);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition:
+      color var(--dur-fast) var(--ease-soft),
+      transform var(--dur-fast) var(--ease-soft);
+  }
+  .filter-clear:hover {
+    color: var(--brand-hover);
+    transform: translateY(-1px);
+  }
+
+  .archive {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .year-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0 0 0.7rem;
+  }
+  .year-num {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 720;
+    color: var(--brand-hover);
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  .year-line {
+    flex: 1;
+    block-size: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+  .year-count {
+    flex: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-subtle);
+  }
+
+  .year-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .year-list::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.9rem;
+    inset-inline-start: 3.65rem;
+    inline-size: 1px;
+    background: var(--border);
+  }
+
+  .ar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--r-sm);
+    transition: background var(--dur) var(--ease-soft);
+  }
+  .ar-link:hover {
+    background: var(--brand-soft);
+  }
+
+  .ar-date {
+    flex: none;
+    inline-size: 2.9rem;
+    font-size: 0.76rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-subtle);
+  }
+  .ar-dot {
+    flex: none;
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--brand);
+    z-index: 1;
+    transition: transform var(--dur) var(--ease-spring);
+  }
+  .ar-link:hover .ar-dot {
+    transform: scale(1.35);
+  }
+  .ar-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.92rem;
+    font-weight: 560;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ar-link:hover .ar-title {
+    color: var(--brand-hover);
+  }
+  .ar-cat {
+    flex: none;
+    font-size: 0.73rem;
+    color: var(--text-subtle);
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--r-full);
+    background: color-mix(in oklab, var(--text-subtle) 12%, transparent);
+  }
+  .ar-arrow {
+    flex: none;
+    color: var(--text-subtle);
+    opacity: 0;
+    transition:
+      opacity var(--dur) var(--ease-soft),
+      transform var(--dur) var(--ease-soft);
+  }
+  .ar-link:hover .ar-arrow {
+    opacity: 1;
+    color: var(--brand);
+    transform: translateX(2px);
+  }
+
+  @media (max-width: 560px) {
+    .year-list::before {
+      display: none;
+    }
+    .ar-cat,
+    .ar-arrow {
+      display: none;
+    }
+    .ar-title {
+      white-space: normal;
+    }
+  }
+</style>

@@ -1,0 +1,221 @@
+---
+/**
+ * 博客列表页。
+ *
+ * 分类 / 标签筛选走「纯静态 + 客户端过滤」：
+ * 卡片上带 data-category / data-tags，脚本按 URL 查询参数隐藏不匹配项，
+ * 既不需要为每个分类预生成页面，也能直接被侧边栏的链接命中。
+ *
+ * 内容量变大后要换成真分页，只需新增 src/pages/blog/page/[page].astro，
+ * 本页逻辑不用动。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import BlogCard from '@/components/ui/BlogCard.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { getPosts, getCategories, getTags } from '@/lib/content';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+
+const [posts, categories, tags] = await Promise.all([
+  getPosts(),
+  getCategories(),
+  getTags(),
+]);
+---
+
+<PageLayout title={t('blog.title')} description={t('blog.subtitle')}>
+  <PageHeader
+    title={t('blog.title')}
+    subtitle={t('blog.subtitle')}
+    icon="book"
+    meta={t('blog.postCount', { n: posts.length })}
+  />
+
+  <!-- 筛选器 -->
+  <div class="filters card card-solid reveal" data-filters>
+    <div class="filter-row">
+      <span class="filter-label">
+        <Icon name="layers" size={14} />
+        {t('blog.category')}
+      </span>
+      <div class="filter-chips">
+        <button class="chip is-on" data-filter="category" data-value="">
+          {t('common.all')}
+        </button>
+        {
+          categories.map((c) => (
+            <button class="chip" data-filter="category" data-value={c.name}>
+              {c.name}
+              <span class="chip-count">{c.count}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label">
+        <Icon name="tag" size={14} />
+        {t('blog.tags')}
+      </span>
+      <div class="filter-chips">
+        <button class="chip is-on" data-filter="tag" data-value="">
+          {t('common.all')}
+        </button>
+        {
+          tags.map((tg) => (
+            <button class="chip" data-filter="tag" data-value={tg.name}>
+              #{tg.name}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="post-grid" data-post-grid>
+    {posts.map((post) => <BlogCard post={post} />)}
+  </div>
+
+  <p class="empty-tip" data-empty hidden>
+    <Icon name="search" size={18} />
+    {t('search.noResult')} · {t('search.hint')}
+  </p>
+</PageLayout>
+
+<script>
+  /**
+   * 客户端筛选：读取 ?category= / ?tag=，切换卡片显示，并同步 URL（不刷新页面）。
+   * 用 astro:page-load 重新绑定，保证 View Transitions 后依然可用。
+   */
+  function setupBlogFilter() {
+    const bar = document.querySelector<HTMLElement>('[data-filters]');
+    const grid = document.querySelector<HTMLElement>('[data-post-grid]');
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+    if (!bar || !grid) return;
+
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-category]')];
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+
+    const state = { category: '', tag: '' };
+
+    function apply() {
+      let visible = 0;
+      cards.forEach((card) => {
+        const cat = card.dataset.category ?? '';
+        const tags = (card.dataset.tags ?? '').split(',').filter(Boolean);
+        const ok =
+          (state.category === '' || cat === state.category) &&
+          (state.tag === '' || tags.includes(state.tag));
+        card.hidden = !ok;
+        if (ok) visible++;
+      });
+
+      buttons.forEach((btn) => {
+        const kind = btn.dataset.filter as 'category' | 'tag';
+        btn.classList.toggle('is-on', state[kind] === (btn.dataset.value ?? ''));
+      });
+
+      if (empty) empty.hidden = visible > 0;
+
+      const params = new URLSearchParams();
+      if (state.category) params.set('category', state.category);
+      if (state.tag) params.set('tag', state.tag);
+      const qs = params.toString();
+      history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const kind = btn.dataset.filter as 'category' | 'tag';
+        const value = btn.dataset.value ?? '';
+        // 再次点击已选项 = 取消筛选
+        state[kind] = state[kind] === value ? '' : value;
+        apply();
+      });
+    });
+
+    const url = new URLSearchParams(location.search);
+    state.category = url.get('category') ?? '';
+    state.tag = url.get('tag') ?? '';
+    apply();
+  }
+
+  setupBlogFilter();
+  document.addEventListener('astro:page-load', setupBlogFilter);
+</script>
+
+<style>
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.95rem 1.1rem;
+    margin-block-end: var(--gap);
+  }
+  .filter-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+  .filter-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex: none;
+    padding-block-start: 0.28rem;
+    font-size: 0.8rem;
+    font-weight: 620;
+    color: var(--text-subtle);
+    min-inline-size: 3.6rem;
+  }
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .filter-chips .chip {
+    cursor: pointer;
+    border: 1px solid transparent;
+    font: inherit;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  .filter-chips .chip:hover {
+    border-color: var(--brand);
+  }
+  .filter-chips .chip.is-on {
+    background: var(--brand);
+    color: var(--brand-contrast);
+  }
+  .chip-count {
+    margin-inline-start: 0.28rem;
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--gap);
+  }
+
+  .empty-tip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 3rem 1rem;
+    color: var(--text-subtle);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    .filter-row {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
+</style>

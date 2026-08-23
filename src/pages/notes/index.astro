@@ -1,0 +1,205 @@
+---
+/**
+ * 日志 / 碎碎念 —— 便签墙。
+ *
+ * 用 CSS multi-column 做瀑布流：不用 JS 计算高度，纯静态也能自然错落。
+ * 每条内容渲染成一张便签（Sticky 组件的第 2 种形态），带锚点供侧边栏跳转。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { render } from 'astro:content';
+import { getNotes } from '@/lib/content';
+import { useTranslations } from '@/i18n';
+import { formatDate, formatRelative, toISODate, countBy } from '@/lib/utils';
+
+const t = useTranslations();
+const notes = await getNotes();
+
+// 预渲染每条正文（碎碎念都很短，构建期成本可以忽略）
+const rendered = await Promise.all(
+  notes.map(async (note) => ({
+    note,
+    Content: (await render(note)).Content,
+  })),
+);
+
+const moodStats = countBy(notes.map((n) => n.data.mood)).slice(0, 8);
+---
+
+<PageLayout title={t('notes.title')} description={t('notes.subtitle')}>
+  <PageHeader
+    title={t('notes.title')}
+    subtitle={t('notes.subtitle')}
+    icon="note"
+    meta={t('notes.count', { n: notes.length })}
+  />
+
+  <div class="mood-bar card card-solid reveal">
+    <span class="mood-label">
+      <Icon name="heart" size={14} />
+      {t('notes.mood')}
+    </span>
+    <div class="mood-list">
+      {
+        moodStats.map((m) => (
+          <span class="mood-item">
+            <span class="mood-emoji">{m.name}</span>
+            <span class="mood-count">{m.count}</span>
+          </span>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="note-wall">
+    {
+      rendered.map(({ note, Content }, i) => (
+        <Sticky
+          id={note.id}
+          class="wall-note reveal-scale"
+          color={note.data.color}
+          corner={note.data.mood}
+          seed={note.id}
+          decoration={i % 3 === 0 ? 'pin' : 'tape'}
+        >
+          <div class="wall-body">
+            <Content />
+          </div>
+          <div class="wall-foot">
+            <time datetime={toISODate(note.data.date)} title={formatDate(note.data.date)}>
+              <Icon name="calendar" size={12} />
+              {formatRelative(note.data.date)}
+            </time>
+            {note.data.tags.length > 0 && (
+              <span class="wall-tags">
+                {note.data.tags.map((tg) => (
+                  <span class="wall-tag">#{tg}</span>
+                ))}
+              </span>
+            )}
+          </div>
+        </Sticky>
+      ))
+    }
+  </div>
+</PageLayout>
+
+<style>
+  .mood-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    padding: 0.7rem 1rem;
+    margin-block-end: calc(var(--gap) + 4px);
+  }
+  .mood-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 620;
+    color: var(--text-subtle);
+  }
+  .mood-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .mood-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.14rem 0.5rem;
+    border-radius: var(--r-full);
+    background: var(--brand-soft);
+  }
+  .mood-emoji {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  .mood-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--brand-hover);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 瀑布流：纯 CSS 多列 */
+  .note-wall {
+    columns: 3 17rem;
+    column-gap: calc(var(--gap) + 6px);
+    padding-block-start: 0.5rem;
+  }
+  .wall-note {
+    /* 关键：避免便签被拆到两列 */
+    break-inside: avoid;
+    margin-block-end: calc(var(--gap) + 10px);
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .wall-body :global(p) {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.72;
+  }
+  .wall-body :global(p:last-child) {
+    margin-block-end: 0;
+  }
+  .wall-body :global(a) {
+    color: var(--brand-hover);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .wall-body :global(code) {
+    font-size: 0.82em;
+    padding: 0.08em 0.34em;
+    border-radius: 5px;
+    background: color-mix(in oklab, var(--surface) 62%, transparent);
+  }
+  .wall-body :global(ul) {
+    margin: 0.3rem 0;
+    padding-inline-start: 1.1rem;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+  .wall-body :global(blockquote) {
+    margin: 0.4rem 0;
+    padding-inline-start: 0.7rem;
+    border-inline-start: 2px solid var(--brand);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+
+  .wall-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-block-start: 0.75rem;
+    padding-block-start: 0.55rem;
+    border-block-start: 1px dashed color-mix(in oklab, var(--text-subtle) 30%, transparent);
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+  }
+  .wall-foot time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .wall-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 640px) {
+    .note-wall {
+      columns: 1;
+    }
+  }
+</style>

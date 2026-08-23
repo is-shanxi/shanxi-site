@@ -1,0 +1,375 @@
+---
+/**
+ * 文章详情页 —— 流式布局（grill-me 第 2 轮定：详情页不套双侧边栏）。
+ *
+ * 结构：文章头 → [正文 | 粘性目录] → 版权 → 上下篇 → 相关文章
+ * 阅读进度条由 BaseLayout 的 progress 开关驱动（CSS scroll-timeline，零 JS）。
+ */
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import TOC from '@/components/ui/TOC.astro';
+import BlogCard from '@/components/ui/BlogCard.astro';
+import Avatar from '@/components/ui/Avatar.astro';
+import { AUTHOR, FEATURES } from '@/config';
+import { useTranslations } from '@/i18n';
+import { formatDate, toISODate } from '@/lib/utils';
+import {
+  getPosts,
+  getReadingTime,
+  getAdjacentPosts,
+  getRelatedPosts,
+} from '@/lib/content';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+};
+
+const { post } = Astro.props;
+const t = useTranslations();
+const { data } = post;
+
+const { Content, headings } = await render(post);
+const rt = getReadingTime(post);
+const { prev, next } = await getAdjacentPosts(post.id);
+const related = await getRelatedPosts(post, 3);
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  type="article"
+  publishedTime={data.published}
+  progress={FEATURES.readingProgress}
+>
+  <article class="post">
+    <!-- 文章头 -->
+    <header class="post-head">
+      <div class="post-head-inner">
+        <a class="post-back link-underline" href="/blog">
+          <Icon name="arrow-right" size={14} class="flip" />
+          {t('blog.title')}
+        </a>
+
+        <div class="post-badges">
+          <a class="chip" href={`/blog?category=${encodeURIComponent(data.category)}`}>
+            {data.category}
+          </a>
+          {data.pinned && <span class="chip chip-neutral"><Icon name="pin" size={12} /> {t('blog.pinned')}</span>}
+        </div>
+
+        <h1 class="post-title">{data.title}</h1>
+        <p class="post-desc">{data.description}</p>
+
+        <div class="post-meta">
+          <span class="meta-author">
+            <Avatar size={26} />
+            {AUTHOR.name}
+          </span>
+          <span class="meta-item">
+            <Icon name="calendar" size={13} />
+            <time datetime={toISODate(data.published)}>{formatDate(data.published)}</time>
+          </span>
+          {
+            data.updated && (
+              <span class="meta-item">
+                <Icon name="check" size={13} />
+                {t('common.updatedOn')} {formatDate(data.updated)}
+              </span>
+            )
+          }
+          <span class="meta-item">
+            <Icon name="clock" size={13} />
+            {t('common.readingTime', { n: rt.minutes })}
+          </span>
+          <span class="meta-item">
+            <Icon name="quote" size={13} />
+            {rt.words} {t('common.words')}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 正文 + 目录 -->
+    <div class="post-body">
+      <div class="prose post-content">
+        <Content />
+      </div>
+
+      <aside class="post-aside">
+        <TOC headings={headings} />
+      </aside>
+    </div>
+
+    <!-- 标签 + 版权 -->
+    <footer class="post-foot">
+      {
+        data.tags.length > 0 && (
+          <div class="post-tags">
+            <Icon name="tag" size={14} />
+            {data.tags.map((tg) => (
+              <a class="chip chip-neutral" href={`/blog?tag=${encodeURIComponent(tg)}`}>
+                #{tg}
+              </a>
+            ))}
+          </div>
+        )
+      }
+      <p class="post-license">
+        <Icon name="heart" size={13} />
+        {t('blog.license')}
+      </p>
+    </footer>
+
+    <!-- 上下篇 -->
+    {
+      (prev || next) && (
+        <nav class="post-nav" aria-label="文章导航">
+          {prev ? (
+            <a class="card card-hover nav-item nav-prev" href={`/blog/${prev.id}`}>
+              <span class="nav-label">
+                <Icon name="arrow-right" size={13} class="flip" />
+                {t('common.prev')}
+              </span>
+              <span class="nav-title">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next && (
+            <a class="card card-hover nav-item nav-next" href={`/blog/${next.id}`}>
+              <span class="nav-label">
+                {t('common.next')}
+                <Icon name="arrow-right" size={13} />
+              </span>
+              <span class="nav-title">{next.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+
+    <!-- 相关文章 -->
+    {
+      related.length > 0 && (
+        <section class="post-related">
+          <h2 class="section-title">
+            <Icon name="sparkles" size={17} />
+            {t('blog.relatedPosts')}
+          </h2>
+          <div class="related-grid">
+            {related.map((p) => (
+              <BlogCard post={p} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    inline-size: 100%;
+    max-width: 74rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+    padding-block: clamp(1.4rem, 3vw, 2.2rem) clamp(3rem, 6vw, 4rem);
+  }
+
+  /* ── 文章头 ───────────────────────────── */
+  .post-head {
+    position: relative;
+    padding: 1.5rem 1.6rem 1.6rem;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(130% 150% at 0% 0%, var(--brand-soft), transparent 60%),
+      var(--surface-glass);
+    overflow: hidden;
+  }
+  .post-head::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -4rem;
+    inset-inline-end: -3rem;
+    inline-size: 11rem;
+    block-size: 11rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-soft), transparent 66%);
+    pointer-events: none;
+  }
+  .post-head-inner {
+    position: relative;
+  }
+
+  .post-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .flip {
+    transform: rotate(180deg);
+  }
+
+  .post-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-start: 0.9rem;
+  }
+
+  .post-title {
+    margin: 0.55rem 0 0;
+    font-size: clamp(1.6rem, 4.2vw, 2.3rem);
+    font-weight: 720;
+    line-height: 1.28;
+    letter-spacing: -0.012em;
+    color: var(--text);
+  }
+  .post-desc {
+    margin: 0.6rem 0 0;
+    max-width: 46rem;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+  }
+
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.95rem;
+    margin-block-start: 1.05rem;
+    padding-block-start: 0.9rem;
+    border-block-start: 1px dashed var(--border);
+    font-size: 0.79rem;
+    color: var(--text-subtle);
+  }
+  .meta-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 620;
+    color: var(--text-muted);
+  }
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* ── 正文 + 目录 ──────────────────────── */
+  .post-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: clamp(1.4rem, 3vw, 2.4rem);
+    align-items: start;
+    margin-block-start: clamp(1.6rem, 3vw, 2.4rem);
+  }
+  .post-content {
+    min-width: 0;
+  }
+  .post-aside {
+    position: sticky;
+    top: calc(var(--header-h) + var(--gap));
+  }
+
+  @media (max-width: 1000px) {
+    .post-body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .post-aside {
+      position: static;
+      order: -1;
+    }
+  }
+
+  /* ── 页脚 ─────────────────────────────── */
+  .post-foot {
+    margin-block-start: 2rem;
+    padding-block-start: 1.1rem;
+    border-block-start: 1px solid var(--border);
+  }
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-subtle);
+  }
+  .post-license {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.9rem 0 0;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.78rem;
+    color: var(--text-subtle);
+    background: var(--brand-soft);
+    border-radius: var(--r-sm);
+  }
+
+  /* ── 上下篇 ───────────────────────────── */
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+    margin-block-start: 1.6rem;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+  }
+  .nav-next {
+    text-align: end;
+    align-items: flex-end;
+  }
+  .nav-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-subtle);
+  }
+  .nav-title {
+    font-size: 0.9rem;
+    font-weight: 620;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .nav-item:hover .nav-title {
+    color: var(--brand-hover);
+  }
+  @media (max-width: 640px) {
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+    .nav-next {
+      text-align: start;
+      align-items: flex-start;
+    }
+  }
+
+  /* ── 相关文章 ─────────────────────────── */
+  .post-related {
+    margin-block-start: 2.4rem;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--gap);
+    margin-block-start: 1rem;
+  }
+</style>

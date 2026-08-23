@@ -1,0 +1,128 @@
+---
+/**
+ * 作品集列表页。
+ * 精选置顶，其余按 order 排。卡片自身承载状态、技术栈与关键产出。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import ProjectCard from '@/components/ui/ProjectCard.astro';
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { getProjects } from '@/lib/content';
+import { useTranslations } from '@/i18n';
+import { countBy } from '@/lib/utils';
+
+const t = useTranslations();
+const projects = await getProjects();
+
+const featured = projects.filter((p) => p.data.featured);
+const others = projects.filter((p) => !p.data.featured);
+
+// 技术栈频次 —— 一眼看出主力方向
+const stackStats = countBy(projects.flatMap((p) => p.data.stack)).slice(0, 12);
+---
+
+<PageLayout title={t('projects.title')} description={t('projects.subtitle')}>
+  <PageHeader
+    title={t('projects.title')}
+    subtitle={t('projects.subtitle')}
+    icon="sparkles"
+    meta={`共 ${projects.length} 个项目`}
+  />
+
+  <Sticky class="stack-note reveal" color="sky" seed="projects-stack" decoration="tape">
+    <h2 class="stack-title">
+      <Icon name="terminal" size={15} />
+      {t('projects.stack')}
+    </h2>
+    <div class="stack-chips">
+      {
+        stackStats.map((s) => (
+          <span class="stack-chip">
+            {s.name}
+            <b>{s.count}</b>
+          </span>
+        ))
+      }
+    </div>
+  </Sticky>
+
+  {
+    featured.length > 0 && (
+      <section class="proj-sec">
+        <h2 class="section-title">
+          <Icon name="heart" size={17} />
+          {t('projects.featured')}
+        </h2>
+        <div class="proj-grid">
+          {featured.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    others.length > 0 && (
+      <section class="proj-sec">
+        <h2 class="section-title">
+          <Icon name="layers" size={17} />
+          其他项目
+        </h2>
+        <div class="proj-grid">
+          {others.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</PageLayout>
+
+<style>
+  .stack-note {
+    margin-block-end: calc(var(--gap) + 6px);
+  }
+  .stack-title {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 660;
+    color: var(--text);
+  }
+  .stack-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .stack-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    padding: 0.16rem 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 550;
+    border-radius: var(--r-full);
+    background: color-mix(in oklab, var(--surface) 66%, transparent);
+    color: var(--text-muted);
+  }
+  .stack-chip b {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--brand-hover);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .proj-sec + .proj-sec {
+    margin-block-start: 2rem;
+  }
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--gap);
+    margin-block-start: 0.9rem;
+  }
+</style>

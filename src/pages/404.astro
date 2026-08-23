@@ -1,0 +1,116 @@
+---
+/**
+ * 404 —— 走丢了。
+ * 不套侧边栏，给一个安静的空页面 + 回家的路。
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Sticky from '@/components/ui/Sticky.astro';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+---
+
+<BaseLayout title={t('notFound.title')} noindex={true}>
+  <section class="nf">
+    <div class="nf-art" aria-hidden="true">
+      <span class="nf-code">404</span>
+      <svg class="nf-hills" viewBox="0 0 400 100" preserveAspectRatio="none">
+        <path d="M0 62 L60 40 L120 66 L190 32 L260 68 L330 42 L400 64 L400 100 L0 100 Z"></path>
+      </svg>
+    </div>
+
+    <h1 class="nf-title">{t('notFound.title')}</h1>
+    <p class="nf-desc">{t('notFound.desc')}</p>
+
+    <Sticky class="nf-note" color="lemon" corner="🧭" seed="404-note" decoration="pin">
+      <p class="nf-note-text">
+        山里雾气有点大，走岔了也没关系 —— 沿着下面这条路就能回到小屋。
+      </p>
+    </Sticky>
+
+    <div class="nf-actions">
+      <a class="btn btn-primary" href="/">
+        <Icon name="home" size={16} />
+        {t('notFound.action')}
+      </a>
+      <a class="btn btn-ghost" href="/blog">
+        <Icon name="book" size={16} />
+        {t('blog.title')}
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.6rem;
+    min-block-size: 68vh;
+    padding: 3rem 1.2rem;
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+
+  .nf-art {
+    position: relative;
+    inline-size: min(100%, 22rem);
+    block-size: 8.5rem;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.4rem;
+  }
+  .nf-code {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 16vw, 6.5rem);
+    font-weight: 720;
+    line-height: 1;
+    background: linear-gradient(120deg, var(--brand), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0.9;
+  }
+  .nf-hills {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 3.4rem;
+    fill: color-mix(in oklab, var(--brand) 22%, transparent);
+  }
+
+  .nf-title {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .nf-desc {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+
+  .nf-note {
+    max-inline-size: 22rem;
+    margin-block-start: 1.4rem;
+  }
+  .nf-note-text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .nf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-block-start: 1.6rem;
+  }
+</style>

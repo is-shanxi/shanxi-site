@@ -1,0 +1,163 @@
+---
+/**
+ * 首页 —— Banner 全宽 + 下方双侧边栏（grill-me 第 3 轮定案）。
+ *
+ * 主内容区依次是：最新文章 → 精选作品 → 最近碎碎念 → 技能树。
+ * 所有数据都经 lib/content 查询层拿，页面本身保持很薄。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import SectionHead from '@/components/ui/SectionHead.astro';
+import BlogCard from '@/components/ui/BlogCard.astro';
+import ProjectCard from '@/components/ui/ProjectCard.astro';
+import NoteCard from '@/components/ui/NoteCard.astro';
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { getPosts, getFeaturedProjects, getNotes } from '@/lib/content';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+
+const [posts, projects, notes] = await Promise.all([
+  getPosts(),
+  getFeaturedProjects(2),
+  getNotes(),
+]);
+
+const latestPosts = posts.slice(0, 4);
+const recentNotes = notes.slice(0, 3);
+
+/** 技能树 —— 用便签承载，属于「多形态便签系统」的一种形态 */
+const SKILLS = [
+  { icon: 'code' as const, title: '后端语言', items: ['Go', 'Java', 'Node.js', 'Python'], color: 'mint' as const },
+  { icon: 'database' as const, title: '存储', items: ['MySQL', 'Redis', 'MongoDB'], color: 'sky' as const },
+  { icon: 'layers' as const, title: '框架 / 中间件', items: ['Gin', 'Spring Boot', 'Kafka', 'gRPC'], color: 'peach' as const },
+  { icon: 'cloud' as const, title: '云原生', items: ['Docker', 'K8s', 'CI/CD'], color: 'lilac' as const },
+];
+---
+
+<PageLayout>
+  <Hero slot="banner" />
+
+  <div id="main-content" class="home">
+    <!-- 最新文章 -->
+    <section class="home-sec">
+      <SectionHead
+        title={t('home.latestPosts')}
+        subtitle={t('blog.subtitle')}
+        icon="book"
+        href="/blog"
+      />
+      <div class="post-grid">
+        {latestPosts.map((post) => <BlogCard post={post} />)}
+      </div>
+    </section>
+
+    <!-- 精选作品 -->
+    <section class="home-sec">
+      <SectionHead
+        title={t('home.featuredProjects')}
+        subtitle={t('projects.subtitle')}
+        icon="sparkles"
+        href="/projects"
+      />
+      <div class="proj-grid">
+        {projects.map((project) => <ProjectCard project={project} />)}
+      </div>
+    </section>
+
+    <!-- 最近碎碎念 -->
+    <section class="home-sec">
+      <SectionHead
+        title={t('home.recentNotes')}
+        subtitle={t('notes.subtitle')}
+        icon="note"
+        href="/notes"
+      />
+      <div class="note-grid">
+        {recentNotes.map((note, i) => <NoteCard note={note} index={i} />)}
+      </div>
+    </section>
+
+    <!-- 技能树 -->
+    <section class="home-sec">
+      <SectionHead title={t('home.skills')} icon="terminal" />
+      <div class="skill-grid">
+        {
+          SKILLS.map((s) => (
+            <Sticky color={s.color} seed={s.title} decoration="tape" class="skill-note">
+              <h3 class="skill-title">
+                <Icon name={s.icon} size={15} />
+                {s.title}
+              </h3>
+              <ul class="skill-items">
+                {s.items.map((it) => (
+                  <li>{it}</li>
+                ))}
+              </ul>
+            </Sticky>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</PageLayout>
+
+<style>
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.2rem, 5vw, 3.2rem);
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--gap);
+  }
+
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--gap);
+  }
+
+  .note-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: calc(var(--gap) + 4px);
+    padding-block-start: 0.6rem;
+  }
+
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    gap: calc(var(--gap) + 4px);
+    padding-block-start: 0.6rem;
+  }
+  .skill-title {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.94rem;
+    font-weight: 660;
+    color: var(--text);
+  }
+  .skill-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .skill-items li {
+    padding: 0.12rem 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 550;
+    border-radius: var(--r-full);
+    background: color-mix(in oklab, var(--surface) 62%, transparent);
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,388 @@
+---
+/**
+ * 关于我。
+ * 手账风：头像卡 → 自我介绍 → 时间线 → 技能便签墙 → 最近在做。
+ * 便签在这里承担「手账块」的形态（多形态便签系统的第 3 种用法）。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import Sticky from '@/components/ui/Sticky.astro';
+import Avatar from '@/components/ui/Avatar.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { AUTHOR, SOCIALS } from '@/config';
+import { useTranslations } from '@/i18n';
+import { cx } from '@/lib/utils';
+
+const t = useTranslations();
+
+/** 时间线 —— mock 数据，替换成真实经历即可 */
+const TIMELINE = [
+  {
+    year: '2026',
+    title: '开始搭建这个小屋',
+    desc: '想有个地方，把学到的东西和当下的心情一起存起来。用 Astro 从零写了一遍。',
+    icon: 'sparkles' as const,
+  },
+  {
+    year: '2025',
+    title: '深入后端与云原生',
+    desc: '把 Go 的并发模型啃了一遍，开始用 Docker / K8s 部署自己的小服务，也学着看监控面板。',
+    icon: 'cloud' as const,
+  },
+  {
+    year: '2024',
+    title: '第一次写出能跑的接口',
+    desc: '用 Gin 写完人生第一个 CRUD，看到 Postman 返回 200 的那一刻，决定往后端走。',
+    icon: 'terminal' as const,
+  },
+  {
+    year: '2023',
+    title: '走进软件工程',
+    desc: '从 C 语言的第一个 Hello World 开始，慢慢意识到「用代码看世界」是件很浪漫的事。',
+    icon: 'book' as const,
+  },
+];
+
+/** 技能便签 */
+const SKILL_NOTES = [
+  { title: '语言', color: 'mint' as const, mood: '🍃', items: ['Go', 'Java', 'TypeScript', 'Python', 'SQL'] },
+  { title: '框架', color: 'sky' as const, mood: '🌊', items: ['Gin', 'Spring Boot', 'GORM', 'MyBatis'] },
+  { title: '存储与中间件', color: 'peach' as const, mood: '🍑', items: ['MySQL', 'Redis', 'MongoDB', 'Kafka', 'RabbitMQ'] },
+  { title: '工程化', color: 'lilac' as const, mood: '🔧', items: ['Git', 'Docker', 'K8s', 'GitHub Actions', 'Nginx'] },
+  { title: '正在学', color: 'lemon' as const, mood: '📚', items: ['分布式共识', 'eBPF', '性能剖析'] },
+];
+
+/** 最近在做 */
+const NOW = [
+  '把这个站点的文章补齐，争取每月两篇',
+  '读《Designing Data-Intensive Applications》第 5 章',
+  '给一个小工具加上完整的单元测试',
+  '学着煮一杯不苦的手冲',
+];
+---
+
+<PageLayout title={t('about.title')} description={t('about.subtitle')}>
+  <PageHeader title={t('about.title')} subtitle={t('about.subtitle')} icon="user" />
+
+  <!-- 自我介绍 -->
+  <section class="intro card card-solid reveal">
+    <div class="intro-avatar">
+      <Avatar size={96} ring={true} />
+    </div>
+    <div class="intro-text">
+      <h2 class="intro-name">
+        {AUTHOR.name}
+        <span class="intro-handle">@{AUTHOR.handle}</span>
+      </h2>
+      <p class="intro-role">
+        <Icon name="terminal" size={14} />
+        {AUTHOR.role}
+        <span class="dot"></span>
+        <Icon name="home" size={14} />
+        {AUTHOR.location}
+      </p>
+      <p class="intro-bio">{AUTHOR.bio}</p>
+      <p class="intro-bio">
+        平时喜欢把复杂的问题拆开看，也喜欢在深夜写点没什么用但很开心的小工具。
+        相信「慢慢来，比较快」，也相信好的软件应该让人感到踏实。
+      </p>
+      <ul class="intro-socials">
+        {
+          SOCIALS.filter((s) => s.key !== 'rss').map((s) => (
+            <li>
+              <a
+                class={cx('social-btn', s.displayOnly && 'is-static')}
+                href={s.href}
+                title={s.hint ?? s.label}
+                {...(s.displayOnly ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+              >
+                <Icon name={s.icon} size={15} />
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 时间线 -->
+  <section class="about-sec">
+    <h2 class="section-title">
+      <Icon name="clock" size={17} />
+      {t('about.timeline')}
+    </h2>
+    <ol class="timeline">
+      {
+        TIMELINE.map((item) => (
+          <li class="tl-item reveal-left">
+            <span class="tl-dot">
+              <Icon name={item.icon} size={13} />
+            </span>
+            <div class="tl-card card card-hover">
+              <span class="tl-year">{item.year}</span>
+              <h3 class="tl-title">{item.title}</h3>
+              <p class="tl-desc">{item.desc}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- 技能便签墙 -->
+  <section class="about-sec">
+    <h2 class="section-title">
+      <Icon name="code" size={17} />
+      {t('about.skills')}
+    </h2>
+    <div class="skill-wall">
+      {
+        SKILL_NOTES.map((s) => (
+          <Sticky color={s.color} corner={s.mood} seed={`skill-${s.title}`} class="reveal-scale">
+            <h3 class="sk-title">{s.title}</h3>
+            <ul class="sk-items">
+              {s.items.map((it) => (
+                <li>{it}</li>
+              ))}
+            </ul>
+          </Sticky>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 最近在做 -->
+  <section class="about-sec">
+    <h2 class="section-title">
+      <Icon name="heart" size={17} />
+      {t('about.nowSection')}
+    </h2>
+    <ul class="now-list card card-solid reveal">
+      {
+        NOW.map((n) => (
+          <li>
+            <Icon name="check" size={14} />
+            {n}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</PageLayout>
+
+<style>
+  /* ── 自我介绍 ─────────────────────────── */
+  .intro {
+    display: flex;
+    gap: clamp(1rem, 3vw, 1.8rem);
+    padding: 1.4rem 1.5rem;
+    margin-block-end: 2rem;
+  }
+  .intro-avatar {
+    flex: none;
+  }
+  .intro-name {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 720;
+    color: var(--text);
+  }
+  .intro-handle {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-subtle);
+  }
+  .intro-role {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.83rem;
+    color: var(--text-muted);
+  }
+  .dot {
+    inline-size: 3px;
+    block-size: 3px;
+    border-radius: 50%;
+    background: var(--text-subtle);
+    margin-inline: 0.3rem;
+  }
+  .intro-bio {
+    margin: 0.85rem 0 0;
+    font-size: 0.92rem;
+    line-height: 1.85;
+    color: var(--text-muted);
+  }
+  .intro-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.32rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: var(--r-full);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .social-btn:hover {
+    color: var(--brand-hover);
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    transform: translateY(-1px);
+  }
+  .social-btn.is-static {
+    cursor: default;
+  }
+  .social-btn.is-static:hover {
+    transform: none;
+  }
+
+  @media (max-width: 640px) {
+    .intro {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .intro-name,
+    .intro-role,
+    .intro-socials {
+      justify-content: center;
+    }
+  }
+
+  /* ── 区块 ─────────────────────────────── */
+  .about-sec + .about-sec {
+    margin-block-start: 2.2rem;
+  }
+
+  /* ── 时间线 ───────────────────────────── */
+  .timeline {
+    position: relative;
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0 0 0 1.6rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.6rem 0.6rem;
+    inset-inline-start: 0.62rem;
+    inline-size: 2px;
+    background: linear-gradient(
+      180deg,
+      var(--brand),
+      color-mix(in oklab, var(--brand) 25%, transparent)
+    );
+    border-radius: 2px;
+  }
+  .tl-item {
+    position: relative;
+    padding-block-end: 1rem;
+  }
+  .tl-dot {
+    position: absolute;
+    inset-block-start: 0.85rem;
+    inset-inline-start: -1.6rem;
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--brand);
+    color: var(--brand);
+    z-index: 1;
+  }
+  .tl-card {
+    padding: 0.85rem 1.05rem 0.95rem;
+  }
+  .tl-year {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--brand-hover);
+    letter-spacing: 0.03em;
+  }
+  .tl-title {
+    margin: 0.2rem 0 0;
+    font-size: 1rem;
+    font-weight: 660;
+    color: var(--text);
+  }
+  .tl-desc {
+    margin: 0.4rem 0 0;
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  /* ── 技能墙 ───────────────────────────── */
+  .skill-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    gap: calc(var(--gap) + 6px);
+    margin-block-start: 1.2rem;
+  }
+  .sk-title {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 680;
+    color: var(--text);
+  }
+  .sk-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sk-items li {
+    padding: 0.12rem 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 550;
+    border-radius: var(--r-full);
+    background: color-mix(in oklab, var(--surface) 64%, transparent);
+    color: var(--text-muted);
+  }
+
+  /* ── 最近在做 ─────────────────────────── */
+  .now-list {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .now-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .now-list :global(svg) {
+    color: var(--brand);
+    flex: none;
+    margin-block-start: 0.24rem;
+  }
+</style>

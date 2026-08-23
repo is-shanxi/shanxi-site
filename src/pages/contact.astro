@@ -1,0 +1,257 @@
+---
+/**
+ * 联系方式。
+ * 纯静态站点没有后端，所以不做表单提交 —— 直接给可点击的联系入口，
+ * 邮箱额外提供一键复制（避免有人不用系统邮件客户端）。
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { AUTHOR, SOCIALS } from '@/config';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+
+const EMAIL = 'shanxi413@gmail.com';
+
+const CHANNELS = [
+  {
+    key: 'email',
+    icon: 'mail' as const,
+    label: '邮箱',
+    value: EMAIL,
+    href: `mailto:${EMAIL}`,
+    hint: t('contact.responseTime'),
+    color: 'mint' as const,
+    copy: true,
+  },
+  {
+    key: 'github',
+    icon: 'github' as const,
+    label: 'GitHub',
+    value: '@is-shanxi',
+    href: 'https://github.com/is-shanxi',
+    hint: '代码、Issue、或者只是来点个 star',
+    color: 'sky' as const,
+    copy: false,
+  },
+  {
+    key: 'wechat',
+    icon: 'wechat' as const,
+    label: '微信',
+    value: '见邮件',
+    href: '',
+    hint: '微信号请先通过邮件索取',
+    color: 'lemon' as const,
+    copy: false,
+  },
+  {
+    key: 'rss',
+    icon: 'rss' as const,
+    label: 'RSS',
+    value: '/rss.xml',
+    href: '/rss.xml',
+    hint: '订阅更新，不用常来也不会错过',
+    color: 'lilac' as const,
+    copy: false,
+  },
+];
+---
+
+<PageLayout title={t('contact.title')} description={t('contact.subtitle')}>
+  <PageHeader title={t('contact.title')} subtitle={t('contact.subtitle')} icon="mail" />
+
+  <Sticky class="hello-note reveal" color="peach" corner="✉️" seed="contact-hello">
+    <p class="hello-text">
+      不管是想聊技术、交个朋友，还是发现了站点上的 bug，都欢迎写信给我。
+      我不一定回得很快，但每一封都会认真读完。
+    </p>
+    <a class="btn btn-primary hello-btn" href={`mailto:${EMAIL}`}>
+      <Icon name="mail" size={16} />
+      {t('contact.emailMe')}
+    </a>
+  </Sticky>
+
+  <div class="channels">
+    {
+      CHANNELS.map((c) => (
+        <div class="card card-hover channel reveal">
+          <span class={`ch-icon ch-${c.color}`}>
+            <Icon name={c.icon} size={18} />
+          </span>
+          <div class="ch-body">
+            <span class="ch-label">{c.label}</span>
+            {c.href ? (
+              <a
+                class="ch-value link-underline"
+                href={c.href}
+                {...(c.href.startsWith('http')
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
+              >
+                {c.value}
+              </a>
+            ) : (
+              <span class="ch-value ch-static">{c.value}</span>
+            )}
+            <span class="ch-hint">{c.hint}</span>
+          </div>
+          {c.copy && (
+            <button
+              class="ch-copy"
+              type="button"
+              data-copy-email={EMAIL}
+              aria-label={t('contact.copyEmail')}
+              title={t('contact.copyEmail')}
+            >
+              <Icon name="copy" size={15} />
+            </button>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="sign">
+    —— {AUTHOR.name}，写于{AUTHOR.location}
+  </p>
+</PageLayout>
+
+<script>
+  /** 邮箱一键复制；成功后短暂切换按钮态 */
+  function setupCopyEmail() {
+    document
+      .querySelectorAll<HTMLButtonElement>('[data-copy-email]')
+      .forEach((btn) => {
+        if (btn.dataset.bound === '1') return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.copyEmail ?? '');
+            btn.classList.add('is-done');
+            window.setTimeout(() => btn.classList.remove('is-done'), 1600);
+          } catch {
+            /* 剪贴板不可用时静默失败，用户仍可手动选择文本 */
+          }
+        });
+      });
+  }
+
+  setupCopyEmail();
+  document.addEventListener('astro:page-load', setupCopyEmail);
+</script>
+
+<style>
+  .hello-note {
+    margin-block-end: calc(var(--gap) + 6px);
+  }
+  .hello-text {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.85;
+    color: var(--text);
+  }
+  .hello-btn {
+    margin-block-start: 1rem;
+  }
+
+  .channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: var(--gap);
+  }
+  .channel {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1rem 1.05rem;
+  }
+  .ch-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: 2.3rem;
+    block-size: 2.3rem;
+    border-radius: var(--r-sm);
+    color: var(--text);
+  }
+  .ch-mint {
+    background: var(--note-sage-bg);
+  }
+  .ch-sky {
+    background: var(--note-porcelain-bg);
+  }
+  .ch-lemon {
+    background: var(--note-ivory-bg);
+  }
+  .ch-lilac {
+    background: var(--note-lilac-bg);
+  }
+
+  .ch-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  .ch-label {
+    font-size: 0.74rem;
+    font-weight: 620;
+    color: var(--text-subtle);
+    letter-spacing: 0.02em;
+  }
+  .ch-value {
+    font-size: 0.92rem;
+    font-weight: 620;
+    color: var(--text);
+    word-break: break-all;
+  }
+  a.ch-value:hover {
+    color: var(--brand-hover);
+  }
+  .ch-static {
+    color: var(--text-muted);
+  }
+  .ch-hint {
+    margin-block-start: 0.2rem;
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--text-subtle);
+  }
+
+  .ch-copy {
+    position: absolute;
+    inset-block-start: 0.7rem;
+    inset-inline-end: 0.7rem;
+    display: grid;
+    place-items: center;
+    inline-size: 1.85rem;
+    block-size: 1.85rem;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .ch-copy:hover {
+    color: var(--brand-hover);
+    border-color: var(--brand);
+    background: var(--brand-soft);
+  }
+  .ch-copy.is-done {
+    color: var(--brand-contrast);
+    background: var(--brand);
+    border-color: var(--brand);
+  }
+
+  .sign {
+    margin: 2rem 0 0;
+    text-align: end;
+    font-size: 0.84rem;
+    color: var(--text-subtle);
+    font-style: italic;
+  }
+</style>
