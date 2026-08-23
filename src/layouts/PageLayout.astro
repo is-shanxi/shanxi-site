@@ -1,0 +1,184 @@
+---
+/**
+ * PageLayout —— 全站「双侧边栏」框架（grill-me 本轮定）。
+ *
+ *   结构：可选全宽 Banner（在栅格之上） + [左栏 | 主内容 | 右栏]
+ *
+ * 左栏：站长名片 / 公告 / 分类 / 标签（Firefly 卡片风）
+ * 右栏：运行状态 / 站点信息 / 交互月历 / 最近碎碎念（Firefly 卡片风）
+ *
+ * 数据（分类、标签、最新碎碎念、文章日期）在此统一获取并下传给各 widget，
+ * 页面组件只需关心主内容，无需重复查询 —— 这是可维护性的关键。
+ *
+ * 响应式：
+ *   ≥1100px 三栏（左 250 / 主 1fr / 右 264）
+ *   860–1099 两栏（左 + 主，右栏收起）
+ *   <860px   单栏，侧栏整体隐藏（移动端走抽屉 + 底部标签栏）
+ */
+import BaseLayout from './BaseLayout.astro';
+import ProfileCard from '@/components/sidebar/ProfileCard.astro';
+import AnnouncementCard from '@/components/sidebar/AnnouncementCard.astro';
+import TaxonomyCard from '@/components/sidebar/TaxonomyCard.astro';
+import RuntimeCard from '@/components/sidebar/RuntimeCard.astro';
+import SiteInfoCard from '@/components/sidebar/SiteInfoCard.astro';
+import Calendar from '@/components/sidebar/Calendar.astro';
+import NotesCard from '@/components/sidebar/NotesCard.astro';
+import WhaleMascot from '@/components/sidebar/WhaleMascot.astro';
+import {
+  getCategories,
+  getTags,
+  getNotes,
+  getPostsByDate,
+} from '@/lib/content';
+import { toISODate } from '@/lib/utils';
+import { SITE } from '@/config';
+import pkg from '@/../package.json';
+
+type Props = astroHTML.JSX.HTMLAttributes & {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  progress?: boolean;
+  noindex?: boolean;
+  /** 是否显示双侧边栏；详情页等流式布局可传 false（但一般用 BaseLayout 更直接） */
+  sidebar?: boolean;
+};
+
+const {
+  title,
+  description,
+  image,
+  type,
+  publishedTime,
+  progress,
+  noindex,
+  sidebar = true,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const [categories, tags, notes, posts] = await Promise.all([
+  getCategories(),
+  getTags(),
+  getNotes(),
+  getPostsByDate(),
+]);
+
+// 有文章的日期集合（去重 'YYYY-MM-DD'），下传给日历组件标记可点击日期
+const postDates = [...new Set(posts.map((p) => toISODate(p.data.published)))];
+const lastPost = posts[0]?.data.published;
+const siteVersion = `v${pkg.version}`;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  type={type}
+  publishedTime={publishedTime}
+  progress={progress}
+  noindex={noindex}
+>
+  <slot name="banner" />
+
+  {
+    sidebar && (
+      <div class="page-shell">
+        <div class="page-grid">
+          <aside class="side side-left" aria-label="侧边导航">
+            <ProfileCard />
+            <AnnouncementCard />
+            <TaxonomyCard categories={categories} tags={tags} />
+          </aside>
+
+          <div class:list={['page-main', className]} {...rest}>
+            <slot />
+          </div>
+
+          <aside class="side side-right" aria-label="侧边信息">
+            <RuntimeCard since={SITE.since} lastPostDate={lastPost} />
+            <SiteInfoCard version={siteVersion} />
+            <Calendar postDates={postDates} />
+            <NotesCard notes={notes} />
+          </aside>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    !sidebar && (
+      <div class:list={['page-shell', 'page-single', className]} {...rest}>
+        <slot />
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .page-shell {
+    inline-size: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2.2rem);
+    padding-block: clamp(1.4rem, 3vw, 2.4rem);
+  }
+
+  .page-grid {
+    display: grid;
+    grid-template-columns: var(--sidebar-l) minmax(0, 1fr) var(--sidebar-r);
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  .side {
+    position: sticky;
+    top: calc(var(--header-h) + var(--gap));
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    align-self: start;
+    /*
+      不再限制侧栏高度，也取消内部滚动。
+      根本原因：固定 max-height + overflow-y:auto 会把所有卡片硬截断到视口高度；
+      左侧还隐藏了滚动条，用户看不到被裁掉的内容，误以为「信息展示不全」。
+      改为由内容自然撑开，sticky 只在侧栏短于视口时生效；
+      内容超过视口时随页面正常滚动，信息完整可读。
+    */
+  }
+
+  .page-main {
+    min-width: 0;
+  }
+
+  /* 取消侧边栏卡片的入场模糊，仅保留位移/淡入，避免滚动时文字发虚 */
+  .side .reveal {
+    --reveal-blur: 0px;
+  }
+
+  /* 平板上收起右栏 */
+  @media (max-width: 1100px) {
+    .page-grid {
+      grid-template-columns: var(--sidebar-l) minmax(0, 1fr);
+    }
+    .side-right {
+      display: none;
+    }
+  }
+
+  /* 移动端隐藏侧栏，交给抽屉 / 底部标签栏 */
+  @media (max-width: 860px) {
+    .page-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .side {
+      display: none;
+    }
+  }
+
+  .page-single {
+    max-width: 56rem;
+  }
+</style>

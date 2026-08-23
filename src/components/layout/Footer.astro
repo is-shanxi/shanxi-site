@@ -1,0 +1,202 @@
+---
+import { SITE, AUTHOR, SOCIALS, NAV } from '@/config';
+import { useTranslations, type TranslationKey } from '@/i18n';
+import Icon from '@/components/ui/Icon.astro';
+
+const t = useTranslations();
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  {/* 顶部波浪分隔：给页脚一个柔和的收束 */}
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <path
+      d="M0 34c120-22 240-30 360-22s240 32 360 34 240-18 360-30 240-12 360 4v40H0z"
+      fill="var(--bg-soft)"></path>
+  </svg>
+
+  <div class="footer-body">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <p class="brand-title font-display">{SITE.title}</p>
+        <p class="brand-desc">{AUTHOR.bio}</p>
+        <div class="socials">
+          {
+            SOCIALS.map((s) =>
+              s.displayOnly ? (
+                <span class="social" title={s.hint} aria-label={s.label}>
+                  <Icon name={s.icon} size={16} />
+                </span>
+              ) : (
+                <a
+                  class="social"
+                  href={s.href}
+                  aria-label={s.label}
+                  target={s.href.startsWith('http') ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                >
+                  <Icon name={s.icon} size={16} />
+                </a>
+              ),
+            )
+          }
+        </div>
+      </div>
+
+      <nav class="footer-nav" aria-label="页脚导航">
+        <p class="col-title">导航</p>
+        {
+          NAV.map((item) => (
+            <a href={item.href} class="footer-link link-underline">
+              {t(item.key as TranslationKey)}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="footer-meta">
+        <p class="col-title">这个站</p>
+        <a href="/rss.xml" class="footer-link link-underline">RSS 订阅</a>
+        {
+          // 站点地图仅在 `astro build` 后生成；dev 模式下该文件不存在，隐藏链接避免 404
+          import.meta.env.PROD && (
+            <a href="/sitemap-index.xml" class="footer-link link-underline">
+              站点地图
+            </a>
+          )
+        }
+        <span class="footer-note">{t('footer.builtWith')}</span>
+        <span class="footer-note">部署于 Cloudflare Pages</span>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        {t('footer.copyright', { since: SITE.since, year, author: AUTHOR.name })}
+      </p>
+      <p class="license">
+        <Icon name="heart" size={13} />
+        {t('footer.poweredBy')}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-block-start: 4rem;
+    position: relative;
+  }
+
+  .wave {
+    display: block;
+    inline-size: 100%;
+    block-size: 46px;
+  }
+
+  .footer-body {
+    background: var(--bg-soft);
+    border-block-start: 1px solid var(--border);
+    padding-block: 2.2rem 1.4rem;
+  }
+
+  .footer-grid {
+    max-inline-size: var(--content-max);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-block-end: 0.5rem;
+  }
+  .brand-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+    max-inline-size: 34ch;
+  }
+
+  .socials {
+    display: flex;
+    gap: 0.4rem;
+    margin-block-start: 1rem;
+  }
+  .social {
+    display: grid;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: var(--r-full);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .social:hover {
+    color: var(--brand-hover);
+    border-color: var(--brand);
+    transform: translateY(-2px);
+  }
+
+  .footer-nav,
+  .footer-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    align-items: flex-start;
+  }
+
+  .col-title {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-block-end: 0.25rem;
+  }
+
+  .footer-link {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    transition: color var(--dur) var(--ease-soft);
+  }
+  .footer-link:hover {
+    color: var(--brand-hover);
+  }
+
+  .footer-note {
+    font-size: 0.78rem;
+    color: var(--text-subtle);
+  }
+
+  .footer-bottom {
+    max-inline-size: var(--content-max);
+    margin-inline: auto;
+    margin-block-start: 1.8rem;
+    padding: 1rem clamp(1rem, 4vw, 2rem) 0;
+    border-block-start: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-subtle);
+  }
+  .license {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+</style>

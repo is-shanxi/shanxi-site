@@ -1,0 +1,97 @@
+---
+import { NAV } from '@/config';
+import { useTranslations, type TranslationKey } from '@/i18n';
+import Icon from '@/components/ui/Icon.astro';
+
+const t = useTranslations();
+const path = Astro.url.pathname;
+const items = NAV.filter((n) => n.primary);
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+{/* 移动端底部标签栏：拇指可达区域，替代顶部导航 */}
+<nav class="tabbar no-print" aria-label="底部导航">
+  {
+    items.map((item) => (
+      <a
+        href={item.href}
+        class:list={['tab', { 'is-active': isActive(item.href) }]}
+        aria-current={isActive(item.href) ? 'page' : undefined}
+      >
+        <span class="tab-icon">
+          <Icon name={item.icon} size={19} />
+        </span>
+        <span class="tab-label">{t(item.key as TranslationKey)}</span>
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .tabbar {
+    position: fixed;
+    inset-block-end: 0;
+    inset-inline: 0;
+    z-index: 45;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 0.15rem;
+    padding: 0.35rem 0.5rem;
+    padding-block-end: max(0.35rem, env(safe-area-inset-bottom));
+    background: color-mix(in oklab, var(--bg) 86%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-block-start: 1px solid var(--border);
+  }
+
+  @media (min-width: 1024px) {
+    .tabbar {
+      display: none;
+    }
+  }
+
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.12rem;
+    padding: 0.3rem 0.2rem;
+    border-radius: var(--r-md);
+    color: var(--text-subtle);
+    transition: color var(--dur) var(--ease-soft);
+  }
+
+  .tab-icon {
+    display: grid;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 24px;
+    border-radius: var(--r-full);
+    transition: all var(--dur) var(--ease-spring);
+  }
+
+  .tab.is-active {
+    color: var(--brand-hover);
+  }
+  .tab.is-active .tab-icon {
+    background: var(--brand-soft);
+    transform: translateY(-1px);
+  }
+
+  .tab-label {
+    font-size: 0.64rem;
+    font-weight: 550;
+    letter-spacing: 0.02em;
+  }
+</style>
+
+<style is:global>
+  /* 给底部标签栏让出空间，避免遮挡页脚内容 */
+  @media (max-width: 1023px) {
+    body {
+      padding-block-end: 62px;
+    }
+  }
+</style>

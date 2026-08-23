@@ -1,0 +1,295 @@
+---
+import { NAV, SITE, AUTHOR, FEATURES } from '@/config';
+import { useTranslations, type TranslationKey } from '@/i18n';
+import Icon from '@/components/ui/Icon.astro';
+import ThemeToggle from '@/components/layout/ThemeToggle.astro';
+import SearchDialog from '@/components/layout/SearchDialog.astro';
+
+const t = useTranslations();
+const path = Astro.url.pathname;
+
+/** 当前激活项：首页需精确匹配，其余用前缀匹配以覆盖详情页 */
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<header class="site-header" data-header>
+  <div class="header-inner">
+    {/* Logo */}
+    <a href="/" class="logo" aria-label={`${SITE.title} 首页`}>
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="30" height="30" fill="none">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--brand)"></stop>
+              <stop offset="100%" stop-color="var(--accent)"></stop>
+            </linearGradient>
+          </defs>
+          <rect width="32" height="32" rx="10" fill="url(#lg)"></rect>
+          {/* 鲸尾：两片对称尾鳍自海浪跃出 */}
+          <path
+            d="M16 9c-4 0-7.5 2.5-8.75 6.25-.45 1.25-1.65 1.75-2.75 1.25 1 2 3 3.25 5.25 3 1.5 1.75 3.75 2.75 6.25 2.75s4.75-1 6.25-2.75c2.25.25 4.25-1 5.25-3-1.1.5-2.3 0-2.75-1.25C23.5 11.5 20 9 16 9Z"
+            fill="white"
+            opacity="0.95"></path>
+          {/* 跃起的水花气泡 */}
+          <circle cx="10" cy="6.5" r="1.2" fill="white" opacity="0.85"></circle>
+          <circle cx="22" cy="6" r="1.5" fill="white" opacity="0.7"></circle>
+          <circle cx="25" cy="10" r="0.9" fill="white" opacity="0.8"></circle>
+        </svg>
+      </span>
+      <span class="logo-text">
+        <span class="logo-title">{SITE.shortTitle}</span>
+        <span class="logo-handle font-display">{AUTHOR.handle}.dev</span>
+      </span>
+    </a>
+
+    {/* 桌面端导航 */}
+    <nav class="nav" aria-label="主导航">
+      {
+        NAV.map((item) => (
+          <a
+            href={item.href}
+            class:list={['nav-item', { 'is-active': isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            <Icon name={item.icon} size={15} />
+            <span>{t(item.key as TranslationKey)}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    {/* 右侧操作区 */}
+    <div class="actions">
+      {
+        FEATURES.search && (
+          <button
+            type="button"
+            class="icon-btn search-trigger"
+            data-search-open
+            aria-label={t('search.open')}
+          >
+            <Icon name="search" size={17} />
+            <span class="search-hint">{t('search.placeholder')}</span>
+            <kbd class="kbd">/</kbd>
+          </button>
+        )
+      }
+      <ThemeToggle />
+      <button
+        type="button"
+        class="icon-btn menu-btn"
+        data-drawer-open
+        aria-label="打开菜单"
+        aria-expanded="false"
+      >
+        <Icon name="menu" size={19} />
+      </button>
+    </div>
+  </div>
+</header>
+
+{FEATURES.search && <SearchDialog />}
+
+<style>
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 50;
+    inline-size: 100%;
+    background: color-mix(in oklab, var(--bg) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-block-end: 1px solid transparent;
+    transition:
+      border-color var(--dur) var(--ease-soft),
+      background-color var(--dur) var(--ease-soft),
+      box-shadow var(--dur) var(--ease-soft);
+  }
+
+  /* 滚动后逐渐显形的分隔线与投影 —— 纯 CSS 滚动驱动 */
+  @supports (animation-timeline: scroll()) {
+    .site-header {
+      animation: header-settle linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 120px;
+    }
+  }
+  @keyframes header-settle {
+    to {
+      border-block-end-color: var(--border);
+      box-shadow: 0 6px 20px -14px rgb(21 34 74 / 0.5);
+      background: color-mix(in oklab, var(--bg) 92%, transparent);
+    }
+  }
+
+  .header-inner {
+    max-inline-size: var(--content-max);
+    margin-inline: auto;
+    block-size: var(--header-h);
+    padding-inline: clamp(0.9rem, 3vw, 1.75rem);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* ── Logo ── */
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: none;
+    border-radius: var(--r-md);
+    transition: transform var(--dur) var(--ease-spring);
+  }
+  .logo:hover {
+    transform: translateY(-1px);
+  }
+  .logo-mark {
+    display: grid;
+    place-items: center;
+    filter: drop-shadow(0 4px 10px var(--brand-ring));
+    transition: transform var(--dur-slow) var(--ease-spring);
+  }
+  .logo:hover .logo-mark {
+    transform: rotate(-8deg) scale(1.06);
+  }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .logo-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.98rem;
+    letter-spacing: 0.02em;
+  }
+  .logo-handle {
+    font-size: 0.66rem;
+    color: var(--text-subtle);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── 导航 ── */
+  .nav {
+    display: none;
+    align-items: center;
+    gap: 0.15rem;
+    margin-inline: auto;
+  }
+  @media (min-width: 1024px) {
+    .nav {
+      display: flex;
+    }
+  }
+
+  .nav-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.36rem;
+    padding: 0.42rem 0.72rem;
+    border-radius: var(--r-full);
+    font-size: 0.875rem;
+    font-weight: 550;
+    color: var(--text-muted);
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .nav-item:hover {
+    color: var(--text);
+    background: color-mix(in oklab, var(--brand) 10%, transparent);
+  }
+  .nav-item.is-active {
+    color: var(--brand-hover);
+    background: var(--brand-soft);
+  }
+  /* 激活项下方的小圆点 */
+  .nav-item.is-active::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 1px;
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    inline-size: 14px;
+    block-size: 2px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+  }
+
+  /* ── 操作区 ── */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-inline-start: auto;
+  }
+  @media (min-width: 1024px) {
+    .actions {
+      margin-inline-start: 0;
+    }
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    block-size: 36px;
+    min-inline-size: 36px;
+    padding-inline: 0.5rem;
+    border-radius: var(--r-full);
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .icon-btn:hover {
+    color: var(--brand-hover);
+    background: var(--brand-soft);
+  }
+
+  .search-trigger {
+    border-color: var(--border);
+    background: var(--surface-glass);
+  }
+  .search-hint {
+    display: none;
+    font-size: 0.8rem;
+    color: var(--text-subtle);
+  }
+  .kbd {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: 0.05rem 0.34rem;
+    border-radius: var(--r-xs);
+    border: 1px solid var(--border);
+    color: var(--text-subtle);
+    background: var(--bg-soft);
+  }
+  @media (min-width: 768px) {
+    .search-trigger {
+      inline-size: 190px;
+      justify-content: flex-start;
+      padding-inline: 0.7rem;
+    }
+    .search-hint {
+      display: inline;
+      margin-inline-end: auto;
+    }
+    .kbd {
+      display: inline;
+    }
+  }
+
+  .menu-btn {
+    display: inline-flex;
+  }
+  @media (min-width: 1024px) {
+    .menu-btn {
+      display: none;
+    }
+  }
+</style>

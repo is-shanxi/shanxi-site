@@ -1,0 +1,228 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/quicksand';
+import '@/styles/global.css';
+
+import { SITE, FEATURES } from '@/config';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import MobileTabBar from '@/components/layout/MobileTabBar.astro';
+import Drawer from '@/components/layout/Drawer.astro';
+import BackToTop from '@/components/ui/BackToTop.astro';
+import Fireflies from '@/components/ui/Fireflies.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** OG 图片相对路径 */
+  image?: string;
+  /** 文章页设为 article，其余为 website */
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  /** 是否在页面顶部显示阅读进度条 */
+  progress?: boolean;
+  /** 禁止搜索引擎收录（404 等） */
+  noindex?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og-default.svg',
+  type = 'website',
+  publishedTime,
+  progress = false,
+  noindex = false,
+  class: className = '',
+} = Astro.props;
+
+const pageTitle = title ? `${title} · ${SITE.title}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
+const ogImage = new URL(image, Astro.site ?? SITE.url).href;
+---
+
+<!doctype html>
+<html lang={SITE.lang} class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.title} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content={SITE.themeColor.light} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    {/* ── 字体：Playfair Display + Cormorant Garamond + Noto Serif SC ──
+        装饰衬线字体，用于 Hero 标题 / SectionHead / 块级引文。
+        走 Google Fonts CDN，preconnect + display=swap 异步加载，不阻塞首屏。 */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Noto+Serif+SC:wght@500;600;700&display=swap"
+      crossorigin
+    />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title ?? SITE.title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={SITE.ogLocale} />
+    <meta property="og:site_name" content={SITE.title} />
+    {
+      publishedTime && (
+        <meta
+          property="article:published_time"
+          content={publishedTime.toISOString()}
+        />
+      )
+    }
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? SITE.title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href="/rss.xml"
+    />
+
+    {/*
+      主题预置脚本：必须内联且阻塞渲染，否则会出现"先白后黑"的闪烁。
+      刻意不抽成外部模块 —— 任何异步加载都会引入闪烁窗口。
+    */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('shanxi-theme');
+          const dark =
+            stored === 'dark' ||
+            (stored !== 'light' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+          document.documentElement.dataset.theme = stored || 'auto';
+          if (dark) {
+            document
+              .querySelector('meta[name="theme-color"]')
+              ?.setAttribute('content', '#08122E');
+          }
+        } catch (_) {}
+      })();
+    </script>
+
+    {FEATURES.viewTransitions && <ClientRouter />}
+
+    <script>
+      import '@/scripts/enhance';
+    </script>
+  </head>
+
+  <body class="min-h-dvh flex flex-col">
+    <a href="#main" class="skip-link">跳到主要内容</a>
+
+    {progress && FEATURES.readingProgress && <div class="reading-progress" />}
+    {FEATURES.fireflies && <Fireflies />}
+
+    <Header />
+    <Drawer />
+
+    <main id="main" class={`flex-1 ${className}`}>
+      <slot />
+    </main>
+
+    <Footer />
+    <MobileTabBar />
+    <BackToTop />
+
+    <style>
+      .skip-link {
+        position: fixed;
+        inset-block-start: 8px;
+        inset-inline-start: 8px;
+        z-index: 200;
+        padding: 0.5rem 1rem;
+        border-radius: var(--r-full);
+        background: var(--brand);
+        color: var(--brand-contrast);
+        font-weight: 600;
+        transform: translateY(-160%);
+        transition: transform var(--dur) var(--ease-spring);
+      }
+      .skip-link:focus-visible {
+        transform: translateY(0);
+      }
+    </style>
+
+    <style is:global>
+      /* 页面切换：整体轻微淡入上移，比默认的滑动更"轻" */
+      @view-transition {
+        navigation: auto;
+      }
+
+      ::view-transition-old(root) {
+        animation: vt-fade-out 180ms var(--ease-soft) both;
+      }
+      ::view-transition-new(root) {
+        animation: vt-fade-in 320ms var(--ease-soft) both;
+      }
+
+      @keyframes vt-fade-out {
+        to {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes vt-fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+          animation: none;
+        }
+      }
+
+      /* 代码块复制按钮（由 enhance.ts 动态插入，样式必须是全局的） */
+      .code-copy {
+        position: absolute;
+        inset-block-start: 8px;
+        inset-inline-end: 8px;
+        padding: 0.18rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        border-radius: var(--r-full);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-muted);
+        opacity: 0;
+        cursor: pointer;
+        transition: all var(--dur) var(--ease-soft);
+      }
+      pre:hover .code-copy,
+      .code-copy:focus-visible {
+        opacity: 1;
+      }
+      .code-copy:hover {
+        color: var(--brand);
+        border-color: var(--brand);
+      }
+      .code-copy.is-done {
+        color: var(--brand);
+        border-color: var(--brand);
+      }
+    </style>
+  </body>
+</html>

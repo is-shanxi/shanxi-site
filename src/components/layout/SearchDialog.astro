@@ -1,0 +1,301 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+---
+
+<dialog class="search-dialog" data-search-dialog aria-label={t('search.open')}>
+  <div class="search-panel">
+    <div class="search-bar">
+      <Icon name="search" size={18} class="text-[var(--text-subtle)]" />
+      <input
+        type="search"
+        class="search-input"
+        data-search-input
+        placeholder={t('search.placeholder')}
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd class="esc">ESC</kbd>
+      <button
+        type="button"
+        class="close-btn"
+        data-search-close
+        aria-label="关闭搜索"
+      >
+        <Icon name="close" size={17} />
+      </button>
+    </div>
+
+    <div class="search-results" data-search-results>
+      <p class="search-tip">{t('search.hint')}</p>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  /**
+   * Pagefind 搜索对话框。
+   *
+   * Pagefind 的索引在 `pagefind --site dist` 之后才存在，
+   * 因此这里做懒加载 + 优雅降级：开发环境下索引缺失时给出明确提示，
+   * 而不是抛一个看不懂的模块加载错误。
+   */
+  type PagefindResult = {
+    data: () => Promise<{
+      url: string;
+      meta: { title?: string };
+      excerpt: string;
+    }>;
+  };
+  type PagefindApi = {
+    search: (q: string) => Promise<{ results: PagefindResult[] }>;
+    options?: (o: Record<string, unknown>) => Promise<void>;
+  };
+
+  let pagefind: PagefindApi | null = null;
+  let loadFailed = false;
+
+  async function ensurePagefind() {
+    if (pagefind || loadFailed) return pagefind;
+    try {
+      // 用变量拼接路径，避免 Vite 在编译期静态解析不存在的 pagefind.js（dev 下未生成）。
+      // 运行时若文件不存在，会被下方 catch 兜住并优雅提示「索引尚未生成」。
+      const pagefindUrl = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
+      // @ts-expect-error —— 构建产物，类型与路径在编译期不存在
+      pagefind = (await import(/* @vite-ignore */ pagefindUrl)) as PagefindApi;
+      await pagefind.options?.({ excerptLength: 24 });
+    } catch {
+      loadFailed = true;
+    }
+    return pagefind;
+  }
+
+  function bindSearch() {
+    const dialog = document.querySelector<HTMLDialogElement>('[data-search-dialog]');
+    const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+    const results = document.querySelector<HTMLElement>('[data-search-results]');
+    if (!dialog || !input || !results) return;
+    if (dialog.dataset.bound === '1') return;
+    dialog.dataset.bound = '1';
+
+    const open = () => {
+      if (dialog.open) return;
+      dialog.showModal();
+      // 提前触发索引加载，用户敲第一个字时通常已就绪
+      void ensurePagefind();
+      requestAnimationFrame(() => input.focus());
+    };
+    const close = () => dialog.open && dialog.close();
+
+    document
+      .querySelectorAll('[data-search-open]')
+      .forEach((el) => el.addEventListener('click', open));
+    document
+      .querySelectorAll('[data-search-close]')
+      .forEach((el) => el.addEventListener('click', close));
+
+    // 点击遮罩区域关闭
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+
+    // "/" 快捷键唤起（输入态下不拦截）
+    document.addEventListener('keydown', (e) => {
+      const target = e.target as HTMLElement | null;
+      const typing =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+      if (e.key === '/' && !typing && !dialog.open) {
+        e.preventDefault();
+        open();
+      }
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        dialog.open ? close() : open();
+      }
+    });
+
+    const escape = (s: string) =>
+      s.replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!,
+      );
+
+    let timer: number | undefined;
+    input.addEventListener('input', () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => void run(input.value.trim()), 180);
+    });
+
+    async function run(query: string) {
+      if (!results) return;
+
+      if (query.length < 1) {
+        results.innerHTML = '<p class="search-tip">试试换个关键词</p>';
+        return;
+      }
+
+      const api = await ensurePagefind();
+      if (!api) {
+        results.innerHTML =
+          '<p class="search-tip">搜索索引尚未生成。运行 <code>npm run build</code> 后即可使用。</p>';
+        return;
+      }
+
+      const { results: hits } = await api.search(query);
+      if (hits.length === 0) {
+        results.innerHTML = '<p class="search-tip">没有找到匹配的内容</p>';
+        return;
+      }
+
+      const items = await Promise.all(hits.slice(0, 8).map((r) => r.data()));
+      results.innerHTML = items
+        .map(
+          (item) => `
+            <a class="search-hit" href="${escape(item.url)}">
+              <span class="hit-title">${escape(item.meta.title ?? '未命名')}</span>
+              <span class="hit-excerpt">${item.excerpt}</span>
+            </a>`,
+        )
+        .join('');
+    }
+  }
+
+  bindSearch();
+  document.addEventListener('astro:page-load', bindSearch);
+</script>
+
+<style>
+  .search-dialog {
+    inline-size: min(640px, calc(100vw - 2rem));
+    max-block-size: min(70vh, 620px);
+    margin: 12vh auto auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: visible;
+  }
+  .search-dialog::backdrop {
+    background: color-mix(in oklab, var(--bg) 55%, rgb(8 18 46 / 0.6));
+    backdrop-filter: blur(6px);
+  }
+  .search-dialog[open] {
+    animation: dialog-in 260ms var(--ease-spring) both;
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(-14px) scale(0.97);
+    }
+  }
+
+  .search-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.98rem;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .search-input::placeholder {
+    color: var(--text-subtle);
+  }
+  .search-input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .esc {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    padding: 0.1rem 0.36rem;
+    border-radius: var(--r-xs);
+    border: 1px solid var(--border);
+    color: var(--text-subtle);
+  }
+
+  .close-btn {
+    display: grid;
+    place-items: center;
+    inline-size: 28px;
+    block-size: 28px;
+    border-radius: var(--r-full);
+    border: none;
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: all var(--dur-fast) var(--ease-soft);
+  }
+  .close-btn:hover {
+    background: var(--bg-soft);
+    color: var(--text);
+  }
+
+  .search-results {
+    max-block-size: 52vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+
+  .search-results :global(.search-tip) {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-subtle);
+    font-size: 0.88rem;
+  }
+  .search-results :global(.search-tip code) {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    padding: 0.1em 0.4em;
+    border-radius: var(--r-xs);
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+  }
+
+  .search-results :global(.search-hit) {
+    display: block;
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--r-md);
+    transition: background var(--dur-fast) var(--ease-soft);
+  }
+  .search-results :global(.search-hit:hover) {
+    background: var(--brand-soft);
+  }
+  .search-results :global(.hit-title) {
+    display: block;
+    font-weight: 620;
+    font-size: 0.92rem;
+    margin-block-end: 0.15rem;
+  }
+  .search-results :global(.hit-excerpt) {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .search-results :global(mark) {
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+</style>
