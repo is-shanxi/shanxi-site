@@ -1,0 +1,961 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════
+   主题变体：改用 class 策略（.dark），而非 prefers-color-scheme。
+   这样用户的手动选择才能覆盖系统偏好。
+   ═══════════════════════════════════════════════════════════════ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 设计令牌 —— 语义化命名，绝不在组件里写死色值
+   古典深海军蓝 + 旧金 + 奶油，致敬洛丽塔·维多利亚美学
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* ── 表面：羊皮奶油 ── */
+  --bg: #f8efd4;
+  --bg-soft: #efe6c8;
+  --surface: #fffdf6;
+  --surface-glass: rgb(255 252 240 / 0.82);
+  --surface-hover: #fbf3e2;
+
+  /* ── 描边：金色母题 ── */
+  --border: #e3d5a8;
+  --border-strong: #c8a35a;
+
+  /* ── 文字：深海军墨蓝 ── */
+  --text: #15224a;
+  --text-muted: #4a5a85;
+  --text-subtle: #8a96b8;
+  --text-inverse: #fbf3e0;
+
+  /* ── 品牌：深海军蓝 ── */
+  --brand: #1c2f5e;
+  --brand-hover: #15224a;
+  --brand-soft: #e1e7f3;
+  --brand-ring: rgb(28 47 94 / 0.28);
+  --brand-contrast: #fbf3e0;
+
+  /* ── 主点缀：旧金 ── */
+  --gold: #c8a35a;
+  --gold-hover: #b58a3d;
+  --gold-soft: #f0dfa3;
+  --gold-ring: rgb(200 163 90 / 0.32);
+
+  /* ── CTA 高亮：珊瑚红，仅用于关键按钮，在冷调里跳出来 ── */
+  --coral: #d96b5a;
+  --coral-hover: #c25543;
+  --coral-soft: #f5ddd5;
+  --coral-ring: rgb(217 107 90 / 0.32);
+
+  /* ── 便签调色板（洛丽塔互补：奶油 / 瓷蓝 / 玫瑰 / 丁香 / 鼠尾草） ── */
+  --note-ivory-bg: #f8edcb;
+  --note-ivory-br: #d4b889;
+  --note-porcelain-bg: #d3e0f1;
+  --note-porcelain-br: #a5beda;
+  --note-rose-bg: #f5d8dd;
+  --note-rose-br: #e5b1bb;
+  --note-lilac-bg: #dcd3e9;
+  --note-lilac-br: #b6a9d2;
+  --note-sage-bg: #d9e9d9;
+  --note-sage-br: #a8c8ad;
+
+  /* ── 状态 ── */
+  --success: #5fa882;
+  --warning: #d8a85a;
+  --danger: #d96b5a;
+
+  /* ── 阴影（金边感：带一线金色外晕） ── */
+  --shadow-sm: 0 1px 2px rgb(21 34 74 / 0.06);
+  --shadow: 0 2px 4px rgb(21 34 74 / 0.05), 0 12px 28px -14px rgb(21 34 74 / 0.22);
+  --shadow-lg: 0 4px 8px rgb(21 34 74 / 0.06), 0 24px 48px -20px rgb(21 34 74 / 0.28);
+  --shadow-note: 0 1px 1px rgb(21 34 74 / 0.07), 0 8px 16px -10px rgb(21 34 74 / 0.3);
+  --shadow-gold: 0 0 0 1px rgb(200 163 90 / 0.22), 0 8px 22px -8px rgb(200 163 90 / 0.32);
+
+  /* ── 圆角 ── */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-full: 999px;
+
+  /* ── 动效 ── */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 160ms;
+  --dur: 280ms;
+  --dur-slow: 520ms;
+
+  /* ── 布局尺度 ── */
+  --header-h: 60px;
+  --sidebar-l: 250px;
+  --sidebar-r: 264px;
+  --gap: 20px;
+  --content-max: 1440px;
+  --prose-max: 46rem;
+
+  /* ── 字体：补 Playfair Display / Cormorant Garamond / Noto Serif SC ── */
+  --font-sans:
+    'Inter', system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-display:
+    'Playfair Display', 'Cormorant Garamond', 'Smiley Sans', '得意黑',
+    'Quicksand Variable', 'Quicksand', system-ui, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', sans-serif;
+  --font-serif:
+    'Playfair Display', 'Cormorant Garamond', 'Noto Serif SC',
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', serif;
+  --font-mono:
+    'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo,
+    Consolas, 'Liberation Mono', monospace;
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #08122e;
+  --bg-soft: #0a1530;
+  --surface: #0f1d3d;
+  --surface-glass: rgb(15 29 61 / 0.78);
+  --surface-hover: #14234e;
+
+  --border: #2a3a6a;
+  --border-strong: #4a5a85;
+
+  --text: #e8edf7;
+  --text-muted: #97a3c5;
+  --text-subtle: #5d6e94;
+  --text-inverse: #08122e;
+
+  --brand: #6188d8;
+  --brand-hover: #88a8e8;
+  --brand-soft: rgb(97 136 216 / 0.18);
+  --brand-ring: rgb(136 168 232 / 0.34);
+  --brand-contrast: #08122e;
+
+  --gold: #e6c478;
+  --gold-hover: #f5d690;
+  --gold-soft: rgb(230 196 120 / 0.18);
+  --gold-ring: rgb(230 196 120 / 0.42);
+
+  --coral: #e68470;
+  --coral-hover: #f08e76;
+  --coral-soft: rgb(230 132 112 / 0.18);
+  --coral-ring: rgb(230 132 112 / 0.36);
+
+  --note-ivory-bg: #2a2418;
+  --note-ivory-br: #4a3e22;
+  --note-porcelain-bg: #1a2848;
+  --note-porcelain-br: #2a3c64;
+  --note-rose-bg: #3a2028;
+  --note-rose-br: #5a323e;
+  --note-lilac-bg: #2a2342;
+  --note-lilac-br: #423a64;
+  --note-sage-bg: #1e2e26;
+  --note-sage-br: #324a3c;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.36);
+  --shadow: 0 2px 4px rgb(0 0 0 / 0.28), 0 12px 28px -14px rgb(0 0 0 / 0.66);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.32), 0 24px 48px -20px rgb(0 0 0 / 0.74);
+  --shadow-note: 0 1px 1px rgb(0 0 0 / 0.36), 0 8px 16px -10px rgb(0 0 0 / 0.76);
+  --shadow-gold: 0 0 0 1px rgb(230 196 120 / 0.18), 0 8px 22px -8px rgb(230 196 120 / 0.4);
+
+  color-scheme: dark;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 把语义令牌接入 Tailwind
+   使用 @theme inline，让工具类直接引用 var()，
+   从而在 .dark 下自动跟随，无需生成两套类。
+   ═══════════════════════════════════════════════════════════════ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border-base: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-fg: var(--text);
+  --color-fg-muted: var(--text-muted);
+  --color-fg-subtle: var(--text-subtle);
+  --color-fg-inverse: var(--text-inverse);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-accent: var(--gold);
+  --color-accent-soft: var(--gold-soft);
+  --color-gold: var(--gold);
+  --color-gold-hover: var(--gold-hover);
+  --color-coral: var(--coral);
+  --color-coral-hover: var(--coral-hover);
+  --color-coral-soft: var(--coral-soft);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+
+  --shadow-soft: var(--shadow);
+  --shadow-soft-lg: var(--shadow-lg);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+
+  --ease-soft: var(--ease-soft);
+  --ease-spring: var(--ease-spring);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. 基础层
+   ═══════════════════════════════════════════════════════════════ */
+@layer base {
+  * {
+    border-color: var(--border);
+    min-width: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* 锚点跳转时给固定头部留出余量 */
+    scroll-padding-top: calc(var(--header-h) + 24px);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15.5px;
+    line-height: 1.75;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+    transition:
+      background-color var(--dur) var(--ease-soft),
+      color var(--dur) var(--ease-soft);
+  }
+
+  /* 大气底纹：奶油 + 三处金色吊灯光斑 + 冷海军边缘晕染。
+     4–6% 透明度，提示氛围不夺主体阅读。 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        22rem 22rem at 14% 18%,
+        color-mix(in oklab, var(--gold) 14%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        26rem 26rem at 86% 22%,
+        color-mix(in oklab, var(--gold) 12%, transparent) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        34rem 30rem at 50% 92%,
+        color-mix(in oklab, var(--brand) 18%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        60rem 40rem at 12% -8%,
+        color-mix(in oklab, var(--brand) 10%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(
+        52rem 36rem at 92% 4%,
+        color-mix(in oklab, var(--gold-soft) 36%, transparent),
+        transparent 60%
+      );
+    opacity: 0.7;
+    transition: opacity var(--dur-slow) var(--ease-soft);
+  }
+
+  .dark body::before {
+    opacity: 0.55;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 650;
+    letter-spacing: -0.005em;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  /* 圆体英文字体只在拉丁字符上生效，中文自动回落到系统字体 */
+  .font-display {
+    font-family: var(--font-display);
+  }
+  /* 衬线字体：装饰用 */
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--gold-soft);
+    color: var(--brand-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: var(--r-xs);
+  }
+
+  /* 细滚动条，与主题同步 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: var(--r-full);
+    border: 2px solid var(--bg);
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-hover);
+    background-clip: content-box;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. 动效基元
+   优先使用 CSS scroll-driven animations（零 JS、不占主线程）；
+   不支持的浏览器由 scroll-reveal.ts 中约 20 行的 IntersectionObserver 兜底。
+   ═══════════════════════════════════════════════════════════════ */
+@layer components {
+  /* ── 入场揭示：已彻底关闭 ──
+     需求：页面在向下滚动时，每个部分从进入视口开始就完全清晰、
+     无模糊、无淡入过渡，内容实时直接呈现。
+     因此 .reveal 不再有任何隐藏初态、模糊或 scroll-driven 动画，
+     元素始终以最终清晰态渲染。 */
+  .reveal {
+    --reveal-y: 0px;
+    --reveal-blur: 0px;
+    opacity: 1;
+    filter: none;
+  }
+
+  /* IntersectionObserver 兜底路径：不再做任何过渡 */
+  .reveal.is-visible {
+    transition: none;
+  }
+
+  /* 现代浏览器：关闭 scroll-driven 入场动画，直接进入清晰态 */
+  @supports (animation-timeline: view()) {
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale {
+      animation: none;
+    }
+    .reveal.is-visible {
+      transition: none;
+    }
+  }
+
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--reveal-y));
+      filter: blur(var(--reveal-blur));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+
+  /* 变体：去除入场的位移/缩放，直接进入清晰态。
+     注意：不破坏 Sticky 便签自身的 rotate() 倾斜（其 transform 由
+     .sticky-note[data-astro-cid] 以更高特异性定义，会覆盖此处）。 */
+  .reveal-left {
+    --reveal-y: 0px;
+    transform: none;
+  }
+  .reveal-right {
+    --reveal-y: 0px;
+    transform: none;
+  }
+  .reveal-scale {
+    --reveal-y: 0px;
+    transform: none;
+  }
+  .reveal-left.is-visible,
+  .reveal-right.is-visible {
+    transform: none;
+  }
+
+  @keyframes reveal-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-22px);
+      filter: blur(var(--reveal-blur));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+  @keyframes reveal-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(22px);
+      filter: blur(var(--reveal-blur));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+  @keyframes reveal-in-scale {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.965);
+      filter: blur(var(--reveal-blur));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+
+  /* 逐项延迟：用于列表的错峰入场 */
+  .stagger > * {
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  /* ── 滚动视差：Banner 缓慢上移并淡出 ── */
+  @supports (animation-timeline: view()) {
+    .parallax-out {
+      animation: parallax-out linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+  @keyframes parallax-out {
+    to {
+      transform: translateY(-14%) scale(1.04);
+      opacity: 0.35;
+    }
+  }
+
+  /* ── 阅读进度条：纯 CSS，绑定文档滚动 ── */
+  .reading-progress {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: 2px;
+    z-index: 60;
+    background: linear-gradient(90deg, var(--gold-hover), var(--gold), var(--gold-hover));
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    pointer-events: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    .reading-progress {
+      animation: progress-grow linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+  @keyframes progress-grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. 可复用外观类
+   ═══════════════════════════════════════════════════════════════ */
+@layer components {
+  /* 磨砂玻璃卡片 —— 全站基础容器语言
+     默认带一线金色外晕：深蓝字 + 奶油背 + 金边 */
+  .card {
+    background: var(--surface-glass);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+    box-shadow:
+      var(--shadow-sm),
+      inset 0 1px 0 rgb(255 252 240 / 0.5);
+    backdrop-filter: blur(12px) saturate(1.15);
+    -webkit-backdrop-filter: blur(12px) saturate(1.15);
+    transition:
+      transform var(--dur) var(--ease-soft),
+      box-shadow var(--dur) var(--ease-soft),
+      border-color var(--dur) var(--ease-soft),
+      background-color var(--dur) var(--ease-soft);
+  }
+
+  .dark .card {
+    box-shadow:
+      var(--shadow-sm),
+      inset 0 1px 0 rgb(232 237 247 / 0.06);
+  }
+
+  .card-solid {
+    background: var(--surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-gold);
+    border-color: var(--gold-hover);
+  }
+
+  /* 章节标题：左侧一枚金色圆点 */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 680;
+    letter-spacing: -0.01em;
+  }
+  .section-title::before {
+    content: '';
+    inline-size: 6px;
+    block-size: 18px;
+    border-radius: var(--r-full);
+    background: linear-gradient(180deg, var(--gold-hover), var(--gold));
+    box-shadow: 0 0 6px color-mix(in oklab, var(--gold) 50%, transparent);
+    flex: none;
+  }
+
+  /* Firefly 风格侧栏卡片：标题栏 + 图标 + 底部分隔 */
+  .ff-card .section-title {
+    margin: 0;
+    font-size: 0.92rem;
+  }
+  .ff-card .section-title::before {
+    display: none;
+  }
+  .ff-title {
+    padding: 1rem 1.1rem 0.85rem;
+    border-block-end: 1px solid var(--border);
+    gap: 0.55rem;
+  }
+  .ff-title svg {
+    color: var(--gold);
+    flex: none;
+  }
+
+  /* 标签胶囊 */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.16rem 0.62rem;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    border-radius: var(--r-full);
+    background: color-mix(in oklab, var(--gold-soft) 64%, transparent);
+    color: var(--brand);
+    border: 1px solid color-mix(in oklab, var(--gold) 38%, transparent);
+    white-space: nowrap;
+    transition: all var(--dur-fast) var(--ease-soft);
+  }
+  a.chip:hover {
+    border-color: var(--gold-hover);
+    transform: translateY(-1px);
+    background: color-mix(in oklab, var(--gold-soft) 90%, transparent);
+  }
+
+  .chip-neutral {
+    background: color-mix(in oklab, var(--text-muted) 10%, transparent);
+    color: var(--text-muted);
+    border-color: transparent;
+  }
+
+  /* 链接下划线：从左向右生长，金色 */
+  .link-underline {
+    background-image: linear-gradient(var(--gold), var(--gold));
+    background-size: 0% 1.5px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size var(--dur) var(--ease-soft);
+  }
+  .link-underline:hover {
+    background-size: 100% 1.5px;
+  }
+
+  /* 主按钮 */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.52rem 1.15rem;
+    border-radius: var(--r-full);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--dur) var(--ease-soft);
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--brand);
+    color: var(--brand-contrast);
+    box-shadow: var(--shadow-sm), 0 0 0 1px color-mix(in oklab, var(--gold) 30%, transparent);
+  }
+  .btn-primary:hover {
+    background: var(--brand-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-gold);
+  }
+  .btn-ghost {
+    background: var(--surface-glass);
+    color: var(--text);
+    border-color: var(--gold);
+    backdrop-filter: blur(8px);
+  }
+  .btn-ghost:hover {
+    border-color: var(--gold-hover);
+    color: var(--brand-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px -8px var(--gold-ring);
+  }
+
+  /* 珊瑚主按钮：CTA 在冷调里跳出来 */
+  .btn-coral {
+    background: linear-gradient(135deg, var(--coral), var(--coral-hover));
+    color: #ffffff;
+    box-shadow: 0 8px 18px -8px var(--coral-ring), 0 0 0 1px color-mix(in oklab, var(--gold) 28%, transparent);
+  }
+  .btn-coral:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px -8px var(--coral-ring), 0 0 0 1px var(--gold-hover);
+    filter: brightness(1.05);
+  }
+
+  /* 海浪分隔线：区段之间的视觉收尾（双波叠加） */
+  .ocean-wave {
+    display: block;
+    inline-size: 100%;
+    block-size: 26px;
+    color: var(--gold-soft);
+    background:
+      radial-gradient(circle at 50% -6px, transparent 14px, currentColor 15px) 0 0 /
+        36px 26px repeat-x;
+    opacity: 0.9;
+  }
+
+  /* 网格背景纹理（关于页 / 空状态用）—— 改为金色网格 */
+  .grid-texture {
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 100%);
+  }
+
+  /* 丝带蝴蝶结分隔：在 SectionHead 之间或章节末尾插入。
+     用 SVG 内联，避免外部资源请求。 */
+  .ribbon-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    margin-block: clamp(1.6rem, 3.5vw, 2.4rem);
+    color: var(--gold);
+  }
+  .ribbon-divider::before,
+  .ribbon-divider::after {
+    content: '';
+    flex: 1;
+    max-inline-size: 9rem;
+    block-size: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--gold) 60%, transparent),
+      transparent
+    );
+  }
+  .ribbon-divider svg {
+    flex: none;
+  }
+
+  /* 角落金边卡：金线沿四角描出的轻量装饰
+     用 box-shadow 多层堆叠实现，不用伪元素、不占空间、不打断布局 */
+  .gold-trim {
+    border: 1px solid var(--border-strong);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--gold-soft) 70%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--gold) 36%, transparent),
+      var(--shadow);
+  }
+
+  /* 金边荷包：segment 边框，金色外晕 */
+  .gold-glow {
+    box-shadow: var(--shadow-gold);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. Markdown 正文排版
+   ═══════════════════════════════════════════════════════════════ */
+@layer components {
+  .prose {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--text);
+    word-break: break-word;
+  }
+
+  .prose > * + * {
+    margin-block-start: 1.15em;
+  }
+
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    scroll-margin-top: calc(var(--header-h) + 24px);
+    margin-block-start: 2.2em;
+    margin-block-end: 0.8em;
+    position: relative;
+    font-family: var(--font-serif);
+  }
+
+  .prose h2 {
+    font-size: 1.42em;
+    padding-block-end: 0.4em;
+    border-block-end: 1px solid var(--border-strong);
+  }
+  .prose h3 {
+    font-size: 1.18em;
+  }
+  .prose h4 {
+    font-size: 1.04em;
+  }
+
+  /* 悬停时在标题左侧浮出锚点井号 */
+  .prose :is(h2, h3, h4) > a.anchor,
+  .prose :is(h2, h3, h4)::after {
+    color: var(--gold);
+  }
+
+  .prose a:not(.chip) {
+    color: var(--brand-hover);
+    font-weight: 550;
+    background-image: linear-gradient(var(--gold), var(--gold));
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size var(--dur) var(--ease-soft);
+  }
+  .prose a:not(.chip):hover {
+    background-size: 100% 2px;
+  }
+
+  .prose strong {
+    font-weight: 700;
+    color: color-mix(in oklab, var(--text) 88%, var(--brand));
+  }
+
+  .prose :is(ul, ol) {
+    padding-inline-start: 1.4em;
+  }
+  .prose ul {
+    list-style: none;
+  }
+  .prose ul > li {
+    position: relative;
+  }
+  .prose ul > li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -1.05em;
+    inset-block-start: 0.72em;
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.85;
+  }
+  .prose ol {
+    list-style: decimal;
+  }
+  .prose ol::marker,
+  .prose ol > li::marker {
+    color: var(--gold);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+  .prose li + li {
+    margin-block-start: 0.35em;
+  }
+
+  .prose blockquote {
+    padding: 0.1em 0 0.1em 1.1em;
+    border-inline-start: 3px solid var(--gold);
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--gold-soft) 60%, transparent),
+      transparent 70%
+    );
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    color: var(--text-muted);
+    font-style: normal;
+  }
+
+  .prose :not(pre) > code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    padding: 0.14em 0.42em;
+    border-radius: var(--r-xs);
+    background: color-mix(in oklab, var(--gold-soft) 50%, transparent);
+    color: var(--brand-hover);
+    border: 1px solid color-mix(in oklab, var(--gold) 36%, transparent);
+  }
+
+  .prose pre {
+    padding: 1.05rem 1.15rem;
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-strong);
+    overflow-x: auto;
+    font-size: 0.86em;
+    line-height: 1.7;
+    box-shadow: var(--shadow-sm), 0 0 0 1px color-mix(in oklab, var(--gold) 20%, transparent);
+  }
+  .prose pre code {
+    font-family: var(--font-mono);
+  }
+
+  /* Shiki 双主题切换：跟随 .dark 类 */
+  .dark .prose .astro-code,
+  .dark .prose .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  .prose img {
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-gold);
+    margin-inline: auto;
+  }
+
+  .prose hr {
+    border: none;
+    block-size: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--gold),
+      transparent
+    );
+    margin-block: 2.4em;
+  }
+
+  .prose table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: 0.92em;
+    display: block;
+    overflow-x: auto;
+  }
+  .prose :is(th, td) {
+    padding: 0.6em 0.9em;
+    border: 1px solid var(--border);
+    text-align: start;
+  }
+  .prose th {
+    background: var(--bg-soft);
+    font-weight: 650;
+  }
+  .prose tbody tr:nth-child(even) {
+    background: color-mix(in oklab, var(--bg-soft) 55%, transparent);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. 无障碍：尊重系统的减少动效偏好
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* 打印：去掉一切装饰 */
+@media print {
+  body::before,
+  .no-print {
+    display: none !important;
+  }
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    backdrop-filter: none;
+  }
+}
