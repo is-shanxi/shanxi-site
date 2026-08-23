@@ -8,44 +8,46 @@
 
 /* ═══════════════════════════════════════════════════════════════
    1. 设计令牌 —— 语义化命名，绝不在组件里写死色值
-   古典深海军蓝 + 旧金 + 奶油，致敬洛丽塔·维多利亚美学
+   女仆工坊：深海藏蓝渐变 #0F2040~#305890 + 奶白 #F8F5F0
+   点缀藏青 #182848 / 哑光浅金 #C8B898，柔光低对比
    ═══════════════════════════════════════════════════════════════ */
 :root {
-  /* ── 表面：羊皮奶油 ── */
-  --bg: #f8efd4;
-  --bg-soft: #efe6c8;
-  --surface: #fffdf6;
-  --surface-glass: rgb(255 252 240 / 0.82);
-  --surface-hover: #fbf3e2;
+  /* ── 表面：奶白昼间工坊 ── */
+  --bg: #f8f5f0;
+  --bg-soft: #f1ece2;
+  --surface: #fdfbf7;
+  --surface-glass: rgb(253 251 247 / 0.74);
+  --surface-hover: #f3eee4;
+  --bg-scene: linear-gradient(170deg, #fdfbf8 0%, #f8f5f0 46%, #eee8db 100%);
 
-  /* ── 描边：金色母题 ── */
-  --border: #e3d5a8;
-  --border-strong: #c8a35a;
+  /* ── 描边：哑光浅金细线 ── */
+  --border: #e3ddd0;
+  --border-strong: #c8b898;
 
-  /* ── 文字：深海军墨蓝 ── */
-  --text: #15224a;
-  --text-muted: #4a5a85;
-  --text-subtle: #8a96b8;
-  --text-inverse: #fbf3e0;
+  /* ── 文字：藏青正文（昼间） ── */
+  --text: #1c2a48;
+  --text-muted: #4d5770;
+  --text-subtle: #8b91a4;
+  --text-inverse: #f8f5f0;
 
-  /* ── 品牌：深海军蓝 ── */
-  --brand: #1c2f5e;
-  --brand-hover: #15224a;
-  --brand-soft: #e1e7f3;
-  --brand-ring: rgb(28 47 94 / 0.28);
-  --brand-contrast: #fbf3e0;
+  /* ── 品牌：深海藏蓝（渐变亮端） ── */
+  --brand: #305890;
+  --brand-hover: #1c3a68;
+  --brand-soft: #e4eaf2;
+  --brand-ring: rgb(48 88 144 / 0.26);
+  --brand-contrast: #f8f5f0;
 
-  /* ── 主点缀：旧金 ── */
-  --gold: #c8a35a;
-  --gold-hover: #b58a3d;
-  --gold-soft: #f0dfa3;
-  --gold-ring: rgb(200 163 90 / 0.32);
+  /* ── 主点缀：哑光浅金 ── */
+  --gold: #c8b898;
+  --gold-hover: #a89468;
+  --gold-soft: #efe8d8;
+  --gold-ring: rgb(200 184 152 / 0.3);
 
-  /* ── CTA 高亮：珊瑚红，仅用于关键按钮，在冷调里跳出来 ── */
-  --coral: #d96b5a;
-  --coral-hover: #c25543;
-  --coral-soft: #f5ddd5;
-  --coral-ring: rgb(217 107 90 / 0.32);
+  /* ── CTA 高亮：柔雾玫瑰，仅用于关键按钮 ── */
+  --coral: #cf8f83;
+  --coral-hover: #b97365;
+  --coral-soft: #f6e4df;
+  --coral-ring: rgb(207 143 131 / 0.3);
 
   /* ── 便签调色板（洛丽塔互补：奶油 / 瓷蓝 / 玫瑰 / 丁香 / 鼠尾草） ── */
   --note-ivory-bg: #f8edcb;
@@ -114,38 +116,45 @@
 }
 
 .dark {
-  --bg: #08122e;
-  --bg-soft: #0a1530;
-  --surface: #0f1d3d;
-  --surface-glass: rgb(15 29 61 / 0.78);
-  --surface-hover: #14234e;
+  /* ── 表面：深海藏蓝渐变工坊（默认主题） ── */
+  --bg: #0f2040;
+  --bg-soft: #182848;
+  --surface: #16274a;
+  --surface-glass: rgb(20 38 74 / 0.5);
+  --surface-hover: #1d335c;
+  --bg-scene: linear-gradient(168deg, #305890 0%, #1c3a6b 30%, #0f2040 68%, #0b1830 100%);
 
-  --border: #2a3a6a;
-  --border-strong: #4a5a85;
+  /* ── 描边：哑光浅金细线 + 藏青暗线 ── */
+  --border: #26365c;
+  --border-strong: #c8b898;
 
-  --text: #e8edf7;
-  --text-muted: #97a3c5;
-  --text-subtle: #5d6e94;
-  --text-inverse: #08122e;
+  /* ── 文字：中性灰正文，柔光低对比 ── */
+  --text: #d9dbe2;
+  --text-muted: #9aa3b8;
+  --text-subtle: #67718e;
+  --text-inverse: #0f2040;
 
-  --brand: #6188d8;
-  --brand-hover: #88a8e8;
-  --brand-soft: rgb(97 136 216 / 0.18);
-  --brand-ring: rgb(136 168 232 / 0.34);
-  --brand-contrast: #08122e;
+  /* ── 品牌：海军蓝亮端，雾化处理 ── */
+  --brand: #7fa3d4;
+  --brand-hover: #a3c0e6;
+  --brand-soft: rgb(127 163 212 / 0.16);
+  --brand-ring: rgb(163 192 230 / 0.3);
+  --brand-contrast: #0f2040;
 
-  --gold: #e6c478;
-  --gold-hover: #f5d690;
-  --gold-soft: rgb(230 196 120 / 0.18);
-  --gold-ring: rgb(230 196 120 / 0.42);
+  /* ── 主点缀：哑光浅金（暗色下微提亮） ── */
+  --gold: #c8b898;
+  --gold-hover: #ddd0b0;
+  --gold-soft: rgb(200 184 152 / 0.14);
+  --gold-ring: rgb(200 184 152 / 0.32);
 
-  --coral: #e68470;
-  --coral-hover: #f08e76;
-  --coral-soft: rgb(230 132 112 / 0.18);
-  --coral-ring: rgb(230 132 112 / 0.36);
+  /* ── CTA 高亮：柔雾玫瑰 ── */
+  --coral: #d99a8e;
+  --coral-hover: #e6aca0;
+  --coral-soft: rgb(217 154 142 / 0.16);
+  --coral-ring: rgb(217 154 142 / 0.32);
 
   --note-ivory-bg: #2a2418;
-  --note-ivory-br: #4a3e22;
+  --note-ivory-br: #55482a;
   --note-porcelain-bg: #1a2848;
   --note-porcelain-br: #2a3c64;
   --note-rose-bg: #3a2028;
@@ -155,11 +164,12 @@
   --note-sage-bg: #1e2e26;
   --note-sage-br: #324a3c;
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.36);
-  --shadow: 0 2px 4px rgb(0 0 0 / 0.28), 0 12px 28px -14px rgb(0 0 0 / 0.66);
-  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.32), 0 24px 48px -20px rgb(0 0 0 / 0.74);
-  --shadow-note: 0 1px 1px rgb(0 0 0 / 0.36), 0 8px 16px -10px rgb(0 0 0 / 0.76);
-  --shadow-gold: 0 0 0 1px rgb(230 196 120 / 0.18), 0 8px 22px -8px rgb(230 196 120 / 0.4);
+  /* ── 阴影：柔和漫射，无硬边 ── */
+  --shadow-sm: 0 1px 2px rgb(4 10 24 / 0.32);
+  --shadow: 0 2px 4px rgb(4 10 24 / 0.22), 0 14px 32px -16px rgb(4 10 24 / 0.6);
+  --shadow-lg: 0 4px 8px rgb(4 10 24 / 0.26), 0 24px 52px -22px rgb(4 10 24 / 0.68);
+  --shadow-note: 0 1px 1px rgb(4 10 24 / 0.3), 0 8px 18px -10px rgb(4 10 24 / 0.64);
+  --shadow-gold: 0 0 0 1px rgb(200 184 152 / 0.16), 0 8px 22px -8px rgb(200 184 152 / 0.28);
 
   color-scheme: dark;
 }
@@ -235,6 +245,8 @@
 
   body {
     background-color: var(--bg);
+    background-image: var(--bg-scene);
+    background-attachment: fixed;
     color: var(--text);
     font-family: var(--font-sans);
     font-size: 15.5px;
@@ -249,8 +261,8 @@
       color var(--dur) var(--ease-soft);
   }
 
-  /* 大气底纹：奶油 + 三处金色吊灯光斑 + 冷海军边缘晕染。
-     4–6% 透明度，提示氛围不夺主体阅读。 */
+  /* 柔光落地窗：天光自窗顶漫射，三道细窗棂竖线，
+     低透明度且向下淡出，绝不遮挡正文。 */
   body::before {
     content: '';
     position: fixed;
@@ -258,37 +270,65 @@
     z-index: -1;
     pointer-events: none;
     background:
+      /* 三道窗棂竖线（极细，仅在窗区可感） */
+      linear-gradient(
+        90deg,
+        transparent 19.6%,
+        color-mix(in oklab, var(--gold) 9%, transparent) 19.9%,
+        transparent 20.2%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 49.9%,
+        color-mix(in oklab, var(--gold) 9%, transparent) 50.2%,
+        transparent 50.5%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 79.8%,
+        color-mix(in oklab, var(--gold) 9%, transparent) 80.1%,
+        transparent 80.4%
+      ),
+      /* 窗顶天光漫射：柔和光池 */
       radial-gradient(
-        22rem 22rem at 14% 18%,
-        color-mix(in oklab, var(--gold) 14%, transparent) 0%,
+        48rem 30rem at 50% -14%,
+        color-mix(in oklab, var(--gold) 18%, transparent) 0%,
+        transparent 66%
+      ),
+      radial-gradient(
+        28rem 22rem at 15% 14%,
+        color-mix(in oklab, var(--gold) 9%, transparent) 0%,
         transparent 60%
       ),
       radial-gradient(
-        26rem 26rem at 86% 22%,
-        color-mix(in oklab, var(--gold) 12%, transparent) 0%,
+        30rem 24rem at 85% 18%,
+        color-mix(in oklab, var(--gold) 8%, transparent) 0%,
         transparent 62%
       ),
+      /* 地面暖色余晖 */
       radial-gradient(
-        34rem 30rem at 50% 92%,
-        color-mix(in oklab, var(--brand) 18%, transparent) 0%,
-        transparent 70%
-      ),
-      radial-gradient(
-        60rem 40rem at 12% -8%,
-        color-mix(in oklab, var(--brand) 10%, transparent),
-        transparent 62%
-      ),
-      radial-gradient(
-        52rem 36rem at 92% 4%,
-        color-mix(in oklab, var(--gold-soft) 36%, transparent),
-        transparent 60%
+        72rem 46rem at 50% 110%,
+        color-mix(in oklab, var(--brand) 20%, transparent) 0%,
+        transparent 72%
       );
-    opacity: 0.7;
+    mask-image: linear-gradient(
+      180deg,
+      black 0%,
+      black 46%,
+      transparent 92%
+    );
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      black 0%,
+      black 46%,
+      transparent 92%
+    );
+    opacity: 0.75;
     transition: opacity var(--dur-slow) var(--ease-soft);
   }
 
   .dark body::before {
-    opacity: 0.55;
+    opacity: 0.6;
   }
 
   h1,
@@ -521,16 +561,18 @@
    ═══════════════════════════════════════════════════════════════ */
 @layer components {
   /* 磨砂玻璃卡片 —— 全站基础容器语言
-     默认带一线金色外晕：深蓝字 + 奶油背 + 金边 */
+     洛可可雕花圆角 + 细金描边：外层金晕、内嵌 5px 金线内框、
+     对角卷草角花（::before），柔和漫射阴影，拒绝厚重立体 */
   .card {
+    position: relative;
     background: var(--surface-glass);
-    border: 1px solid var(--border-strong);
+    border: 1px solid color-mix(in oklab, var(--gold) 42%, var(--border));
     border-radius: var(--r-lg);
     box-shadow:
       var(--shadow-sm),
-      inset 0 1px 0 rgb(255 252 240 / 0.5);
-    backdrop-filter: blur(12px) saturate(1.15);
-    -webkit-backdrop-filter: blur(12px) saturate(1.15);
+      inset 0 1px 0 rgb(255 252 240 / 0.42);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
     transition:
       transform var(--dur) var(--ease-soft),
       box-shadow var(--dur) var(--ease-soft),
@@ -538,16 +580,49 @@
       background-color var(--dur) var(--ease-soft);
   }
 
+  /* 金线雕花内框：内缩 5px 的细金描线 */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: calc(var(--r-lg) - 6px);
+    border: 1px solid color-mix(in oklab, var(--gold) 26%, transparent);
+    pointer-events: none;
+  }
+
+  /* 卷草角花：左上 / 右下两枚对角细金卷草 */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 60 60'%3E%3Cpath d='M6 54C6 32 16 18 32 16c11-1.4 19 4 17.4 12.4C48 35 41 37.6 37 33.6c-3.2-3.2-.6-8.6 4.4-7.4' fill='none' stroke='%23C8B898' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='53.5' cy='25.5' r='1.5' fill='%23C8B898' opacity='0.4'/%3E%3C/svg%3E")
+        no-repeat top left / 52px 52px,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 60 60'%3E%3Cg transform='rotate(180 30 30)'%3E%3Cpath d='M6 54C6 32 16 18 32 16c11-1.4 19 4 17.4 12.4C48 35 41 37.6 37 33.6c-3.2-3.2-.6-8.6 4.4-7.4' fill='none' stroke='%23C8B898' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='53.5' cy='25.5' r='1.5' fill='%23C8B898' opacity='0.4'/%3E%3C/g%3E%3C/svg%3E")
+        no-repeat bottom right / 52px 52px;
+  }
+
   .dark .card {
     box-shadow:
       var(--shadow-sm),
-      inset 0 1px 0 rgb(232 237 247 / 0.06);
+      inset 0 1px 0 rgb(217 219 226 / 0.05);
   }
 
   .card-solid {
     background: var(--surface);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  /* 侧边栏：深海藏蓝纵向渐变（换皮不改结构） */
+  .dark .ff-card {
+    background: linear-gradient(
+      180deg,
+      rgb(24 40 72 / 0.62),
+      rgb(15 32 64 / 0.44)
+    );
   }
 
   .card-hover:hover {
