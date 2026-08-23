@@ -1,0 +1,86 @@
+---
+/**
+ * 文章目录。
+ * 只收 h2 / h3 两级 —— 再深就变成噪音了。
+ * 高亮由 enhance.ts 的 setupTOC 用 IntersectionObserver 完成（选择器 [data-toc]）。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  class?: string;
+}
+
+const { headings, class: className = '' } = Astro.props;
+const t = useTranslations();
+
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 0 && (
+    <nav class:list={['toc card card-solid', className]} data-toc aria-label={t('blog.tocTitle')}>
+      <h2 class="section-title toc-title">
+        <Icon name="list" size={16} />
+        {t('sidebar.toc')}
+      </h2>
+      <ul class="toc-list">
+        {items.map((h) => (
+          <li class={`toc-item depth-${h.depth}`}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    padding: 0.9rem 1rem 1rem;
+  }
+  .toc-title {
+    margin: 0 0 0.55rem;
+    font-size: 0.92rem;
+  }
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.06rem;
+    max-block-size: 60vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .toc-item a {
+    display: block;
+    padding: 0.3rem 0.5rem 0.3rem 0.6rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    border-inline-start: 2px solid var(--border);
+    border-radius: 0 var(--r-xs) var(--r-xs) 0;
+    transition:
+      color var(--dur) var(--ease-soft),
+      background var(--dur) var(--ease-soft),
+      border-color var(--dur) var(--ease-soft);
+  }
+  .depth-3 a {
+    padding-inline-start: 1.35rem;
+    font-size: 0.78rem;
+  }
+  .toc-item a:hover {
+    color: var(--brand-hover);
+    background: var(--brand-soft);
+  }
+  .toc-item a:global(.is-active) {
+    color: var(--brand-hover);
+    font-weight: 620;
+    border-inline-start-color: var(--brand);
+    background: var(--brand-soft);
+  }
+</style>

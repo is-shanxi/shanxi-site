@@ -1,0 +1,60 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+---
+
+<button
+  type="button"
+  class="back-to-top no-print"
+  data-back-to-top
+  aria-label={t('common.backToTop')}
+  title={t('common.backToTop')}
+>
+  <Icon name="arrow-up" size={18} />
+</button>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    inset-block-end: calc(74px + env(safe-area-inset-bottom));
+    inset-inline-end: 1rem;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    inline-size: 42px;
+    block-size: 42px;
+    border-radius: var(--r-full);
+    border: 1px solid var(--border);
+    background: var(--surface-glass);
+    backdrop-filter: blur(10px);
+    color: var(--text-muted);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(14px) scale(0.85);
+    pointer-events: none;
+    transition: all var(--dur-slow) var(--ease-spring);
+  }
+
+  .back-to-top.is-shown {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .back-to-top:hover {
+    color: var(--brand-contrast);
+    background: var(--brand);
+    border-color: var(--brand);
+    transform: translateY(-3px);
+  }
+
+  @media (min-width: 1024px) {
+    .back-to-top {
+      inset-block-end: 1.5rem;
+      inset-inline-end: 1.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,242 @@
+---
+/**
+ * 作品集卡片。
+ * 左侧色条 + 状态徽章 + 技术栈 + 关键产出，底部跳转源码 / 预览。
+ * 主视觉色随项目 accent 字段取自设计系统便签色板。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import type { Project } from '@/lib/content';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const t = useTranslations();
+const { data } = project;
+
+const statusLabel =
+  data.status === 'active'
+    ? t('projects.status.active')
+    : data.status === 'wip'
+      ? t('projects.status.wip')
+      : t('projects.status.archived');
+
+/** 项目主色 frontmatter → 新令牌名映射（兼容旧 mint/sky/...） */
+const ACCENT_ALIAS: Record<string, 'ivory' | 'porcelain' | 'rose' | 'lilac' | 'sage'> = {
+  ivory: 'ivory',
+  porcelain: 'porcelain',
+  rose: 'rose',
+  lilac: 'lilac',
+  sage: 'sage',
+  mint: 'sage',
+  sky: 'porcelain',
+  lemon: 'ivory',
+  peach: 'rose',
+};
+const noteToken = ACCENT_ALIAS[data.accent] ?? 'porcelain';
+---
+
+<article
+  class="card card-hover project-card reveal-scale"
+  style={`--proj-accent:var(--note-${noteToken}-br); --proj-accent-bg:var(--note-${noteToken}-bg)`}
+>
+  <a href={`/projects/${project.id}`} class="project-link">
+    <div class="project-head">
+      <div class="project-titles">
+        <h3 class="project-title">{data.title}</h3>
+        <p class="project-period">
+          <Icon name="calendar" size={13} />
+          {data.period}
+        </p>
+      </div>
+      <span class={`status-badge status-${data.status}`}>{statusLabel}</span>
+    </div>
+
+    <p class="project-desc">{data.description}</p>
+
+    {
+      data.highlights.length > 0 && (
+        <ul class="project-highlights">
+          {data.highlights.map((h) => (
+            <li>
+              <Icon name="check" size={13} />
+              {h}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="project-stack">
+      {data.stack.map((s) => <span class="chip chip-neutral">{s}</span>)}
+    </div>
+  </a>
+
+  <div class="project-foot">
+    <span class="project-role">
+      <Icon name="user" size={13} />
+      {data.role}
+    </span>
+    <div class="project-links">
+      {
+        data.repo && (
+          <a class="proj-btn" href={data.repo} target="_blank" rel="noopener noreferrer">
+            <Icon name="github" size={14} />
+            {t('projects.viewSource')}
+          </a>
+        )
+      }
+      {
+        data.demo && (
+          <a class="proj-btn proj-btn-primary" href={data.demo} target="_blank" rel="noopener noreferrer">
+            <Icon name="link" size={14} />
+            {t('projects.viewLive')}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    position: relative;
+    padding-inline-start: 0.9rem;
+    border-inline-start: 3px solid var(--proj-accent);
+  }
+  .project-link {
+    display: block;
+    padding: 1.05rem 1.05rem 0.4rem;
+  }
+
+  .project-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+  .project-title {
+    margin: 0;
+    font-size: 1.12rem;
+    font-weight: 680;
+    color: var(--text);
+    transition: color var(--dur) var(--ease-soft);
+  }
+  .project-link:hover .project-title {
+    color: var(--brand-hover);
+  }
+  .project-period {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    margin: 0.3rem 0 0;
+    font-size: 0.76rem;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .status-badge {
+    flex: none;
+    padding: 0.16rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: var(--r-full);
+    white-space: nowrap;
+  }
+  .status-active {
+    color: var(--brand-hover);
+    background: var(--brand-soft);
+  }
+  .status-wip {
+    color: var(--warning);
+    background: color-mix(in oklab, var(--warning) 16%, transparent);
+  }
+  .status-archived {
+    color: var(--text-muted);
+    background: color-mix(in oklab, var(--text-muted) 14%, transparent);
+  }
+
+  .project-desc {
+    margin: 0.7rem 0 0.6rem;
+    font-size: 0.86rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+
+  .project-highlights {
+    list-style: none;
+    margin: 0 0 0.7rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .project-highlights li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-size: 0.84rem;
+    color: var(--text);
+  }
+  .project-highlights :global(svg) {
+    color: var(--brand);
+    flex: none;
+    margin-block-start: 0.22rem;
+  }
+
+  .project-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-end: 0.6rem;
+  }
+
+  .project-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.7rem 1.05rem 1rem;
+    border-block-start: 1px dashed var(--border);
+    flex-wrap: wrap;
+  }
+  .project-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.76rem;
+    color: var(--text-subtle);
+  }
+  .project-links {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .proj-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.32rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: var(--r-full);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .proj-btn:hover {
+    color: var(--brand-hover);
+    border-color: var(--brand);
+    background: var(--brand-soft);
+  }
+  .proj-btn-primary {
+    background: var(--brand);
+    color: var(--brand-contrast);
+    border-color: var(--brand);
+  }
+  .proj-btn-primary:hover {
+    background: var(--brand-hover);
+    color: var(--brand-contrast);
+  }
+</style>

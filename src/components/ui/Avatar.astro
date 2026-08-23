@@ -1,0 +1,151 @@
+---
+/**
+ * 头像。
+ *
+ * 用内联 SVG 画了一个二次元感的占位形象（薄荷发色 + 猫耳 + 腮红），
+ * 好处是矢量、零请求、可跟随主题；换成真实照片只需把 <svg> 换成 <img>。
+ */
+interface Props {
+  size?: number;
+  /** 显示旋转的渐变光环（首页大头像用） */
+  ring?: boolean;
+  class?: string;
+}
+
+const { size = 48, ring = false, class: className = '' } = Astro.props;
+const uid = Math.random().toString(36).slice(2, 8);
+---
+
+<span
+  class:list={['avatar', { 'has-ring': ring }, className]}
+  style={`--size:${size}px`}
+>
+  <span class="avatar-inner">
+    <svg viewBox="0 0 96 96" width={size} height={size} role="img" aria-label="站长头像">
+      <defs>
+        <linearGradient id={`hair-${uid}`} x1="0" y1="0" x2="0.6" y2="1">
+          <stop offset="0%" stop-color="var(--brand)"></stop>
+          <stop offset="100%" stop-color="var(--accent)"></stop>
+        </linearGradient>
+        <linearGradient id={`bg-${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--brand-soft)"></stop>
+          <stop offset="100%" stop-color="var(--accent-soft)"></stop>
+        </linearGradient>
+        <clipPath id={`clip-${uid}`}>
+          <circle cx="48" cy="48" r="48"></circle>
+        </clipPath>
+      </defs>
+
+      <g clip-path={`url(#clip-${uid})`}>
+        <rect width="96" height="96" fill={`url(#bg-${uid})`}></rect>
+
+        {/* 猫耳 */}
+        <path
+          d="M22 34 26 15l17 12z"
+          fill={`url(#hair-${uid})`}
+          stroke="none"></path>
+        <path
+          d="M74 34 70 15 53 27z"
+          fill={`url(#hair-${uid})`}
+          stroke="none"></path>
+        <path d="M26.5 30.5 28.6 20.5l8.4 6z" fill="var(--surface)" opacity="0.55"></path>
+        <path d="M69.5 30.5 67.4 20.5l-8.4 6z" fill="var(--surface)" opacity="0.55"></path>
+
+        {/* 脸 */}
+        <ellipse cx="48" cy="52" rx="24" ry="25" fill="var(--surface)"></ellipse>
+
+        {/* 刘海 */}
+        <path
+          d="M24 50c0-15 10-25 24-25s24 10 24 25c0-6-4-9-8-9-3.5 0-5 2-8 2s-5.5-3.5-9-3.5S32 45 29 46c-2.6.9-4 2.2-5 4z"
+          fill={`url(#hair-${uid})`}></path>
+
+        {/* 侧发 */}
+        <path d="M24 50c-1 9 0 15 2 19l3-3c-2-5-2.4-10-2-16z" fill={`url(#hair-${uid})`}></path>
+        <path d="M72 50c1 9 0 15-2 19l-3-3c2-5 2.4-10 2-16z" fill={`url(#hair-${uid})`}></path>
+
+        {/* 眼睛 */}
+        <ellipse cx="39" cy="54" rx="3.4" ry="4.2" fill="var(--text)"></ellipse>
+        <ellipse cx="57" cy="54" rx="3.4" ry="4.2" fill="var(--text)"></ellipse>
+        <circle cx="40.3" cy="52.4" r="1.25" fill="var(--surface)"></circle>
+        <circle cx="58.3" cy="52.4" r="1.25" fill="var(--surface)"></circle>
+
+        {/* 腮红 */}
+        <ellipse cx="32.5" cy="60" rx="4" ry="2.4" fill="var(--brand)" opacity="0.28"></ellipse>
+        <ellipse cx="63.5" cy="60" rx="4" ry="2.4" fill="var(--brand)" opacity="0.28"></ellipse>
+
+        {/* 嘴 */}
+        <path
+          d="M45.6 63.4c1.4 1.6 3.4 1.6 4.8 0"
+          stroke="var(--text)"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          fill="none"></path>
+      </g>
+    </svg>
+  </span>
+</span>
+
+<style>
+  .avatar {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--size);
+    block-size: var(--size);
+    flex: none;
+  }
+
+  .avatar-inner {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur-slow) var(--ease-spring);
+  }
+  .avatar:hover .avatar-inner {
+    transform: scale(1.05) rotate(-3deg);
+  }
+
+  /* 旋转渐变光环 */
+  .has-ring::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      var(--brand),
+      var(--accent),
+      var(--brand-soft),
+      var(--brand)
+    );
+    animation: ring-spin 9s linear infinite;
+    z-index: -1;
+    filter: blur(1px);
+    opacity: 0.85;
+  }
+  .has-ring::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: var(--bg);
+    z-index: -1;
+  }
+
+  @keyframes ring-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .has-ring::before {
+      animation: none;
+    }
+  }
+</style>

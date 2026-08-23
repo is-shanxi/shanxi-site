@@ -1,0 +1,87 @@
+---
+/**
+ * 碎碎念便签（便签墙用）。
+ * 直接复用 Sticky 组件，按内容哈希稳定派生配色与倾斜角。
+ * 整张可点（锚点到 /notes#id）。
+ */
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import { formatDate, toISODate, truncate } from '@/lib/utils';
+import type { Note } from '@/lib/content';
+
+interface Props {
+  note: Note;
+  /** 用于错峰入场的序号 */
+  index?: number;
+}
+
+const { note, index = 0 } = Astro.props;
+const t = useTranslations();
+const { data } = note;
+
+const plain = (note.body ?? '')
+  .replace(/^[#>*\-_`~]+/gm, '')
+  .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+  .replace(/\s+/g, ' ')
+  .trim();
+---
+
+<Sticky
+  class="note-card reveal-scale"
+  style={`--i:${index}`}
+  corner={data.mood}
+  seed={note.id}
+  href={`/notes#${note.id}`}
+>
+  <p class="note-lede">{truncate(plain, 80)}</p>
+  <div class="note-foot">
+    <time datetime={toISODate(data.date)}>
+      <Icon name="calendar" size={12} />
+      {formatDate(data.date)}
+    </time>
+    {
+      data.tags.length > 0 && (
+        <span class="note-tags">
+          {data.tags.slice(0, 2).map((tg) => (
+            <span class="note-tag">#{tg}</span>
+          ))}
+        </span>
+      )
+    }
+  </div>
+</Sticky>
+
+<style>
+  .note-lede {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.68;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .note-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-block-start: 0.6rem;
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+  }
+  .note-foot time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: none;
+  }
+  .note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: flex-end;
+  }
+  .note-tag {
+    opacity: 0.8;
+  }
+</style>

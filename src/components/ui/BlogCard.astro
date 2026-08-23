@@ -1,0 +1,183 @@
+---
+/**
+ * 博客文章卡片。
+ * 封面用品牌渐变 + 标题首字水印（无图也能好看）；置顶另有角标。
+ * data-category / data-tags 供博客列表页的客户端筛选使用。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import { formatDate, toISODate, hashString } from '@/lib/utils';
+import { getReadingTime, type BlogPost } from '@/lib/content';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const t = useTranslations();
+const { data } = post;
+
+// 阅读时长基于正文估算，在 lib/content 中实现
+const rt = getReadingTime(post).minutes;
+const firstChar = (data.title.trim()[0] ?? '·').toUpperCase();
+const angle = 108 + (hashString(post.id) % 64);
+---
+
+<article
+  class="card card-hover blog-card reveal-scale"
+  data-category={data.category}
+  data-tags={data.tags.join(',')}
+>
+  <a href={`/blog/${post.id}`} class="blog-link">
+    <div
+      class="blog-cover"
+      style={`--cover-angle:${angle}deg`}
+      aria-hidden="true"
+    >
+      <span class="cover-char">{firstChar}</span>
+      {data.pinned && <span class="pin-badge"><Icon name="pin" size={12} /> {t('blog.pinned')}</span>}
+      <span class="cover-cat">{data.category}</span>
+    </div>
+
+    <div class="blog-body">
+      <h3 class="blog-title">{data.title}</h3>
+      <p class="blog-desc">{data.description}</p>
+
+      <div class="blog-meta">
+        <time datetime={toISODate(data.published)}>
+          <Icon name="calendar" size={13} />
+          {formatDate(data.published)}
+        </time>
+        <span class="meta-sep"></span>
+        <span class="blog-rt">
+          <Icon name="clock" size={13} />
+          {t('common.readingTime', { n: rt })}
+        </span>
+      </div>
+
+      {
+        data.tags.length > 0 && (
+          <div class="blog-tags">
+            {data.tags.slice(0, 3).map((tg) => (
+              <span class="chip chip-neutral">#{tg}</span>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </a>
+</article>
+
+<style>
+  .blog-card {
+    overflow: hidden;
+  }
+  .blog-link {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+  }
+
+  .blog-cover {
+    position: relative;
+    aspect-ratio: 16 / 7;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(120% 120% at 20% 10%, var(--brand-soft), transparent 60%),
+      linear-gradient(var(--cover-angle), var(--brand-soft), var(--accent-soft));
+    border-block-end: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .cover-char {
+    font-family: var(--font-display);
+    font-size: 3.4rem;
+    font-weight: 700;
+    color: var(--brand);
+    opacity: 0.32;
+    user-select: none;
+  }
+  .pin-badge {
+    position: absolute;
+    inset-block-start: 0.6rem;
+    inset-inline-start: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.16rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: var(--r-full);
+    background: var(--brand);
+    color: var(--brand-contrast);
+    box-shadow: var(--shadow-sm);
+  }
+  .cover-cat {
+    position: absolute;
+    inset-block-end: 0.6rem;
+    inset-inline-end: 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--brand-hover);
+    background: color-mix(in oklab, var(--surface) 70%, transparent);
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--r-full);
+  }
+
+  .blog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.95rem 1.05rem 1.1rem;
+    flex: 1;
+  }
+  .blog-title {
+    margin: 0;
+    font-size: 1.06rem;
+    font-weight: 660;
+    line-height: 1.4;
+    color: var(--text);
+    transition: color var(--dur) var(--ease-soft);
+  }
+  .blog-link:hover .blog-title {
+    color: var(--brand-hover);
+  }
+  .blog-desc {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .blog-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: 0.15rem;
+    font-size: 0.76rem;
+    color: var(--text-subtle);
+  }
+  .blog-meta time,
+  .blog-rt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+  }
+  .meta-sep {
+    inline-size: 3px;
+    block-size: 3px;
+    border-radius: 50%;
+    background: var(--text-subtle);
+    opacity: 0.5;
+  }
+  .blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-start: 0.2rem;
+  }
+</style>

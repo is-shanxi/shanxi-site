@@ -1,0 +1,103 @@
+---
+/**
+ * 列表页页头 —— 博客 / 作品集 / 日志 / 归档共用。
+ * 大标题 + 副标题 + 计数徽章，右侧一枚随主题变色的装饰图标。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import type { IconName } from '@/config';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  icon?: IconName;
+  /** 右上角小计数，如「共 6 篇文章」 */
+  meta?: string;
+  class?: string;
+}
+
+const { title, subtitle, icon, meta, class: className = '' } = Astro.props;
+---
+
+<header class:list={['page-header reveal', className]}>
+  <div class="ph-text">
+    <h1 class="ph-title">
+      {icon && <span class="ph-icon"><Icon name={icon} size={20} /></span>}
+      {title}
+    </h1>
+    {subtitle && <p class="ph-sub">{subtitle}</p>}
+  </div>
+  {meta && <span class="ph-meta">{meta}</span>}
+</header>
+
+<style>
+  .page-header {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.3rem 1.2rem;
+    margin-block-end: var(--gap);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(120% 160% at 0% 0%, var(--brand-soft), transparent 62%),
+      var(--surface-glass);
+    overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -3rem;
+    inset-inline-end: -3rem;
+    inline-size: 9rem;
+    block-size: 9rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-soft), transparent 68%);
+    pointer-events: none;
+  }
+
+  .ph-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: clamp(1.5rem, 3.4vw, 1.95rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .ph-icon {
+    display: grid;
+    place-items: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--r-sm);
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+  }
+  .ph-sub {
+    margin: 0.45rem 0 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+  .ph-meta {
+    position: relative;
+    flex: none;
+    padding: 0.22rem 0.7rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--brand-hover);
+    background: var(--brand-soft);
+    border-radius: var(--r-full);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 560px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+  }
+</style>

@@ -1,0 +1,245 @@
+---
+/**
+ * Sticky —— 全站复用的「便签」组件（卡片便签组件的核心实现）。
+ *
+ * 这是 grill-me 第 3 轮定的「多形态便签系统」：一套组件同时服务于
+ *   1. 碎碎念动态流（right sidebar + /notes 墙）
+ *   2. 技能展示（关于页手账块）
+ *   3. 文章内 callout（引用/提示块）
+ *   4. 公告位
+ *
+ * 设计要点：
+ *   - 5 种配色来自设计系统令牌（--note-{color}-bg / -br），绝不写死色值；
+ *   - 倾斜角由 seed 经 FNV-1a 稳定派生，SSR 与水合不会抖动；
+ *   - 轻微随机倾斜 + hover 上浮并「扯平」，营造手贴便签的治愈感；
+ *   - 胶带 / 图钉装饰可切换，装饰也跟随主题。
+ *
+ * 用法：
+ *   <Sticky color="mint" seed="note-1">内容</Sticky>
+ *   <Sticky href="/notes/xx" decoration="pin">可点击</Sticky>
+ */
+import { hashString, pickByHash } from '@/lib/utils';
+import { cx } from '@/lib/utils';
+
+/**
+ * 便签配色 —— 历史 color 名（mint/sky/lemon/peach/lilac）保留兼容，
+ * 新增语义名（ivory/porcelain/rose/lilac/sage）。实际渲染时统一
+ * 规范化到新令牌。
+ */
+type NoteColorName = 'ivory' | 'porcelain' | 'rose' | 'lilac' | 'sage';
+type NoteColorAlias =
+  | NoteColorName
+  | 'mint'
+  | 'sky'
+  | 'lemon'
+  | 'peach';
+type Decoration = 'tape' | 'pin' | 'none';
+
+interface Props {
+  /** 指定颜色；留空则由 seed 稳定派生
+   *  支持旧名 mint/sky/lemon/peach 与新名 ivory/porcelain/rose/sage */
+  color?: NoteColorAlias;
+  /** 派生颜色与倾斜角的种子；不传则取首个插槽文本 */
+  seed?: string;
+  /** 自定义倾斜角（度）；不传则按 seed 自动分配 */
+  tilt?: number;
+  /** 顶部装饰：胶带 / 图钉 / 无 */
+  decoration?: Decoration;
+  /** 传入则整张便签可点击跳转 */
+  href?: string;
+  /** 更小的内边距，用于侧边栏窄列 */
+  compact?: boolean;
+  /** 角标 emoji，显示在便签右上角 */
+  corner?: string;
+  class?: string;
+  /** 透传行内样式（例如错峰入场用的 --i） */
+  style?: string;
+}
+
+const {
+  color,
+  seed,
+  tilt,
+  decoration = 'tape',
+  href,
+  compact = false,
+  corner,
+  class: className = '',
+  style: extraStyle = '',
+  ...rest
+} = Astro.props;
+
+/**
+ * 未显式传 seed 时，取插槽文本作为种子，保证同一内容倾斜/配色稳定。
+ * 传了 seed 就跳过 slots.render —— 避免插槽被渲染两次的额外开销。
+ */
+const resolvedSeed =
+  seed ?? ((await Astro.slots.render('default')) || 'sticky').slice(0, 40);
+
+// 旧别名 → 新令牌名 映射（兼容历史 frontmatter / 调用方）
+const COLOR_ALIAS: Record<NoteColorAlias, NoteColorName> = {
+  ivory: 'ivory',
+  porcelain: 'porcelain',
+  rose: 'rose',
+  lilac: 'lilac',
+  sage: 'sage',
+  mint: 'sage',
+  sky: 'porcelain',
+  lemon: 'ivory',
+  peach: 'rose',
+};
+
+const NEW_COLORS: NoteColorName[] = ['ivory', 'porcelain', 'rose', 'lilac', 'sage'];
+const TILTS = [-2.4, -1.2, 0, 1.1, 2.3, -0.6, 1.7, -1.8];
+
+const resolvedNoteColor: NoteColorName =
+  color ? COLOR_ALIAS[color] : pickByHash(NEW_COLORS, resolvedSeed);
+const noteTilt = typeof tilt === 'number' ? tilt : pickByHash(TILTS, resolvedSeed);
+
+// 用种子再派一个细微的随机平移，避免便签墙过于整齐
+const shiftX = (hashString(resolvedSeed) % 7) - 3; // -3..3 px
+
+// 直接绑定到设计系统令牌，避免写死色值，且天然跟随 .dark
+const noteBg = `var(--note-${resolvedNoteColor}-bg)`;
+const noteBr = `var(--note-${resolvedNoteColor}-br)`;
+
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag
+  class={cx('sticky-note', compact && 'is-compact', className)}
+  href={href}
+  style={`--note-bg:${noteBg}; --note-br:${noteBr}; --note-tilt:${noteTilt}deg; --note-shift:${shiftX}px; ${extraStyle}`}
+  {...rest}
+>
+  {decoration === 'tape' && <span class="sticky-tape" aria-hidden="true"></span>}
+  {decoration === 'pin' && <span class="sticky-pin" aria-hidden="true"></span>}
+  {corner && <span class="sticky-corner" aria-hidden="true">{corner}</span>}
+  <div class="sticky-body">
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .sticky-note {
+    position: relative;
+    display: block;
+    padding: 1.15rem 1.25rem 1.1rem;
+    border-radius: var(--r-md);
+    background: var(--note-bg);
+    border: 1px solid var(--note-br);
+    box-shadow: var(--shadow-note);
+    transform: rotate(var(--note-tilt)) translateX(var(--note-shift));
+    transform-origin: center;
+    transition:
+      transform var(--dur-slow) var(--ease-spring),
+      box-shadow var(--dur) var(--ease-soft),
+      filter var(--dur) var(--ease-soft);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .is-compact {
+    padding: 0.8rem 0.9rem 0.78rem;
+    border-radius: var(--r-sm);
+  }
+
+  /* 便签配色：--note-bg / --note-br 已在行内由设计系统令牌绑定，
+     此处仅保留一个安全兜底，避免任何边缘情况下出现透明便签 */
+  .sticky-note {
+    --note-bg: var(--note-ivory-bg);
+    --note-br: var(--note-ivory-br);
+  }
+
+  a.sticky-note:hover {
+    transform: rotate(0deg) translateY(-4px) scale(1.018);
+    box-shadow: var(--shadow-lg);
+    filter: saturate(1.05);
+  }
+  a.sticky-note:focus-visible {
+    transform: rotate(0deg) translateY(-3px);
+  }
+  .sticky-note:not(a):hover {
+    transform: rotate(0deg) translateY(-3px) scale(1.012);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sticky-body {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 胶带：顶部居中的半透明小条，略带旋转 */
+  .sticky-tape {
+    position: absolute;
+    inset-block-start: -9px;
+    inset-inline: 50%;
+    inline-size: 64px;
+    block-size: 20px;
+    translate: -50% 0;
+    rotate: -3deg;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--gold-soft) 92%, var(--gold)),
+      color-mix(in oklab, var(--gold-soft) 70%, var(--gold-hover))
+    );
+    opacity: 0.78;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+    z-index: 2;
+  }
+  .sticky-tape::before,
+  .sticky-tape::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inline-size: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0 3px,
+      rgb(0 0 0 / 0.05) 3px 4px
+    );
+  }
+  .sticky-tape::before {
+    inset-inline-start: -3px;
+  }
+  .sticky-tape::after {
+    inset-inline-end: -3px;
+  }
+
+  /* 图钉：顶部居中的小圆点，带高光 */
+  .sticky-pin {
+    position: absolute;
+    inset-block-start: -7px;
+    inset-inline: 50%;
+    inline-size: 14px;
+    block-size: 14px;
+    translate: -50% 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #fff 0 18%, transparent 22%),
+      linear-gradient(180deg, var(--gold-hover), var(--brand));
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.3),
+      inset 0 -1px 2px rgb(0 0 0 / 0.25);
+    z-index: 2;
+  }
+
+  /* 角标 emoji */
+  .sticky-corner {
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-end: 0.6rem;
+    font-size: 1rem;
+    line-height: 1;
+    z-index: 1;
+    filter: saturate(1.1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-note,
+    .sticky-note:hover {
+      transform: none !important;
+    }
+  }
+</style>

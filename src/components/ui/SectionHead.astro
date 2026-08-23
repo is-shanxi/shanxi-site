@@ -1,0 +1,79 @@
+---
+/**
+ * 区块标题 —— 首页各板块与列表页共用。
+ * 左侧标题 + 可选副标题，右侧「查看全部」链接。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import type { IconName } from '@/config';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  icon?: IconName;
+  /** 传入则右侧显示「查看全部」 */
+  href?: string;
+  moreLabel?: string;
+  class?: string;
+}
+
+const { title, subtitle, icon, href, moreLabel, class: className = '' } = Astro.props;
+const t = useTranslations();
+---
+
+<header class:list={['sec-head reveal', className]}>
+  <div class="sec-left">
+    <h2 class="section-title sec-title">
+      {icon && <Icon name={icon} size={18} />}
+      {title}
+    </h2>
+    {subtitle && <p class="sec-sub">{subtitle}</p>}
+  </div>
+
+  {
+    href && (
+      <a class="sec-more" href={href}>
+        {moreLabel ?? t('home.viewAll')}
+        <Icon name="arrow-right" size={15} />
+      </a>
+    )
+  }
+</header>
+
+<style>
+  .sec-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block-end: 1.05rem;
+  }
+  .sec-title {
+    margin: 0;
+    font-size: 1.24rem;
+  }
+  .sec-sub {
+    margin: 0.35rem 0 0;
+    font-size: 0.84rem;
+    color: var(--text-subtle);
+  }
+  .sec-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    flex: none;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: color var(--dur) var(--ease-soft);
+  }
+  .sec-more :global(svg) {
+    transition: transform var(--dur) var(--ease-spring);
+  }
+  .sec-more:hover {
+    color: var(--brand-hover);
+  }
+  .sec-more:hover :global(svg) {
+    transform: translateX(3px);
+  }
+</style>
