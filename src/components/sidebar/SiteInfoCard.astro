@@ -1,0 +1,102 @@
+---
+/**
+ * 右侧栏：站点信息（构建平台 / 博客版本 / 文章许可）。
+ * Firefly 风格 info-row 卡片。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+
+interface Props {
+  platform?: string;
+  version?: string;
+  license?: string;
+}
+
+const { platform = 'Astro + EdgeOne Pages', version = 'dev', license = 'CC BY-NC-SA 4.0' } = Astro.props;
+const t = useTranslations();
+
+const rows = [
+  { icon: 'cloud' as const, label: t('sidebar.siteInfo.platform'), value: platform },
+  { icon: 'code' as const, label: t('sidebar.siteInfo.version'), value: version },
+  { icon: 'quote' as const, label: t('sidebar.siteInfo.license'), value: license },
+];
+---
+
+<div class="card card-solid ff-card siteinfo-card reveal">
+  <h3 class="section-title ff-title">
+    <Icon name="database" size={16} />
+    {t('sidebar.siteInfo')}
+  </h3>
+
+  <div class="ff-body">
+    {
+      rows.map((row) => (
+        <div class="ff-row">
+          <span class="ff-row-label">
+            <Icon name={row.icon} size={15} />
+            {row.label}
+          </span>
+          <span class="ff-row-value">{row.value}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .siteinfo-card {
+    padding: 0;
+    /* 取消 overflow:hidden，避免父级裁剪行内容 */
+  }
+  .ff-title {
+    padding: 1rem 1.1rem 0.85rem;
+  }
+  .ff-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .ff-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.8rem;
+    padding: 0.85rem 1.1rem;
+    border-block-start: 1px solid var(--border);
+    min-width: 0;
+  }
+  .ff-row-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* label（如「构建平台」）必须完整可读，不允许被压缩成省略号 */
+    flex: 0 0 auto;
+    min-width: 0;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .ff-row-label :global(svg) {
+    color: var(--brand);
+    opacity: 0.85;
+    flex: none;
+  }
+  .ff-row-value {
+    /* 占据 label 之外的剩余宽度，允许长文本自然换行 */
+    flex: 1 1 0%;
+    min-width: 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: end;
+    /*
+      站点信息的值文本（如构建平台、许可协议）往往较长，
+      在窄侧栏里强制不换行会被裁成省略号，信息反而丢失。
+      允许自然换行，并用 break-word 防止超长英文撑破卡片。
+    */
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

@@ -1,0 +1,227 @@
+---
+/**
+ * 右侧栏：交互式月历（仿 firefly 的右栏日历组件）。
+ *
+ * - 服务端兜底：以「构建时的今天」渲染当月网格，并标记有文章的日期。
+ *   这样即使禁用 JS，访客也能看到一张真实、可点击的日历（项目"禁用 JS 仍可读"的底线）。
+ * - 客户端增强：enhance.ts 的 setupCalendar() 按访客真实时间重渲染当前月，
+ *   支持 上/下月切换、回到今天、点击有文章的日期跳转到 /archive?date=YYYY-MM-DD。
+ *
+ * postDates（'YYYY-MM-DD' 去重数组）由 PageLayout 统一获取并透传，
+ * 避免每个页面各自查询内容集合。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+
+interface Props {
+  postDates?: string[];
+}
+
+const { postDates = [] } = Astro.props;
+const t = useTranslations();
+
+// ── 服务端兜底网格：构建期当月 ───────────────────────
+const now = new Date();
+const viewYear = now.getFullYear();
+const viewMonth = now.getMonth(); // 0-11
+const pad = (n: number) => String(n).padStart(2, '0');
+const isoOf = (y: number, m: number, d: number) => `${y}-${pad(m + 1)}-${pad(d)}`;
+
+const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0=周日
+const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+const prevDays = new Date(viewYear, viewMonth, 0).getDate();
+const todayIso = isoOf(viewYear, viewMonth, now.getDate());
+
+// 单元格：上月补位 → 本月 → 下月尾部，凑满整周
+const cells: { d: number; iso: string; out: boolean }[] = [];
+for (let i = firstDay - 1; i >= 0; i--) cells.push({ d: prevDays - i, iso: '', out: true });
+for (let d = 1; d <= daysInMonth; d++) cells.push({ d, iso: isoOf(viewYear, viewMonth, d), out: false });
+const total = firstDay + daysInMonth;
+const trail = (7 - (total % 7)) % 7;
+for (let i = 1; i <= trail; i++) cells.push({ d: i, iso: '', out: true });
+---
+
+<div
+  class="card card-solid ff-card calendar-card reveal"
+  data-calendar
+  data-post-dates={JSON.stringify(postDates)}
+  data-haspost-title={t('calendar.hasPost')}
+>
+  <h3 class="section-title ff-title">
+    <Icon name="calendar" size={16} />
+    {t('calendar.title')}
+  </h3>
+
+  <div class="cal-head">
+    <button class="cal-nav" type="button" data-cal-prev aria-label={t('calendar.prevMonth')}>
+      <Icon name="chevron-left" size={16} />
+    </button>
+    <button class="cal-month" type="button" data-cal-month aria-label={t('calendar.backToToday')}>
+      {viewYear}年{viewMonth + 1}月
+    </button>
+    <div class="cal-nav-group">
+      <button class="cal-nav" type="button" data-cal-today aria-label={t('calendar.backToToday')}>
+        <Icon name="refresh" size={15} />
+      </button>
+      <button class="cal-nav" type="button" data-cal-next aria-label={t('calendar.nextMonth')}>
+        <Icon name="chevron-right" size={16} />
+      </button>
+    </div>
+  </div>
+
+  <div class="cal-weekdays" aria-hidden="true">
+    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+  </div>
+
+  <div class="cal-grid" data-cal-grid>
+    {
+      cells.map((c) => {
+        const isToday = c.iso === todayIso;
+        const hasPost = !c.out && postDates.includes(c.iso);
+        const cls = `cal-cell${c.out ? ' is-out' : ''}${isToday ? ' is-today' : ''}${hasPost ? ' has-post' : ''}`;
+        const inner = hasPost
+          ? `<a class="cal-link" href="/archive?date=${c.iso}" title="${t('calendar.hasPost')}">${c.d}</a>`
+          : `<span>${c.d}</span>`;
+        return <div class={cls} set:html={inner} />;
+      })
+    }
+  </div>
+</div>
+
+<style>
+  .calendar-card {
+    padding: 0;
+    overflow: hidden;
+  }
+  .calendar-card .section-title :global(svg) {
+    color: var(--brand);
+  }
+
+  .cal-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.85rem 1.1rem 0.6rem;
+  }
+  .cal-nav-group {
+    display: flex;
+    gap: 0.3rem;
+  }
+  .cal-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.9rem;
+    block-size: 1.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background var(--dur-fast) var(--ease-soft),
+      color var(--dur-fast) var(--ease-soft);
+  }
+  .cal-nav:hover {
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+  }
+  .cal-month {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-weight: 680;
+    font-size: 0.96rem;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    padding: 0.25rem 0.4rem;
+    text-align: start;
+    transition:
+      background var(--dur-fast) var(--ease-soft),
+      color var(--dur-fast) var(--ease-soft);
+  }
+  .cal-month:hover {
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+  }
+
+  .cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding-inline: 1.1rem;
+    margin-block-end: 0.3rem;
+    font-size: 0.7rem;
+    color: var(--text-subtle);
+    text-align: center;
+  }
+  .cal-weekdays span:nth-child(1),
+  .cal-weekdays span:nth-child(7) {
+    color: var(--text-muted);
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding-inline: 1.1rem;
+    padding-block-end: 1.05rem;
+  }
+
+  /* 动态注入的单元格需用 :global() 才能命中（scoped 属性不会带到 innerHTML 生成的节点） */
+  .cal-grid :global(.cal-cell) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    font-size: 0.78rem;
+    color: var(--text);
+    border-radius: var(--r-sm);
+    line-height: 1;
+  }
+  .cal-grid :global(.cal-cell.is-out) {
+    color: var(--text-subtle);
+    opacity: 0.45;
+  }
+  .cal-grid :global(.cal-cell.is-today) {
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+    font-weight: 700;
+  }
+  .cal-grid :global(.cal-cell.has-post) {
+    font-weight: 700;
+  }
+  .cal-grid :global(.cal-link) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: var(--r-sm);
+    color: var(--brand-hover);
+    position: relative;
+    transition:
+      background var(--dur-fast) var(--ease-soft),
+      transform var(--dur-fast) var(--ease-spring);
+  }
+  .cal-grid :global(.cal-link::after) {
+    content: '';
+    position: absolute;
+    inset-block-end: 3px;
+    inline-size: 4px;
+    block-size: 4px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+  .cal-grid :global(.cal-link:hover) {
+    background: var(--brand);
+    color: var(--brand-contrast);
+    transform: translateY(-1px);
+  }
+  .cal-grid :global(.cal-link:hover::after) {
+    background: var(--brand-contrast);
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+/**
+ * 左侧栏：公告位。
+ * 用一张图钉装饰的便签承载站点公告 / 一句话声明，内容可经 props 覆盖。
+ * Firefly 卡片风格：标题栏 + 图标 + 底部分隔。
+ */
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+
+interface Props {
+  title?: string;
+  body?: string;
+  mood?: string;
+  color?: 'mint' | 'sky' | 'lemon' | 'peach' | 'lilac';
+}
+
+const {
+  title = '',
+  body = '',
+  mood = '📌',
+  color = 'lemon',
+} = Astro.props;
+const t = useTranslations();
+
+const text = body || t('sidebar.announcementText');
+---
+
+<div class="card card-solid ff-card ann reveal">
+  <h3 class="section-title ff-title ann-title">
+    <Icon name="quote" size={16} />
+    {title || t('sidebar.announcement')}
+  </h3>
+
+  <div class="ann-body">
+    <Sticky decoration="pin" corner={mood} color={color} seed="announcement" tilt={0}>
+      <p class="ann-text">{text}</p>
+    </Sticky>
+  </div>
+</div>
+
+<style>
+  .ann {
+    padding: 0;
+  }
+  .ann-title {
+    margin: 0;
+  }
+  .ann-title :global(svg) {
+    color: var(--gold);
+  }
+  .ann-body {
+    padding: 1rem 1.2rem 1.15rem;
+  }
+  .ann-text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text);
+    word-break: break-word;
+  }
+</style>

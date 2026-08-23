@@ -1,0 +1,101 @@
+---
+/**
+ * 右侧栏：最近的碎碎念（动态流预览）。
+ * 把最新的几条短内容渲染成紧凑便签，点进去到 /notes 看全部。
+ */
+import Sticky from '@/components/ui/Sticky.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import { formatRelative, truncate } from '@/lib/utils';
+import type { Note } from '@/lib/content';
+
+interface Props {
+  notes: Note[];
+  limit?: number;
+}
+
+const { notes, limit = 4 } = Astro.props;
+const t = useTranslations();
+
+const recent = notes.slice(0, limit);
+
+// 去掉 markdown 标记，取首句做预览
+const plain = (s: string) =>
+  s.replace(/^[#>*\-_`~]+/gm, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s+/g, ' ').trim();
+---
+
+<div class="card card-solid ff-card notes-card reveal">
+  <h3 class="section-title ff-title notes-title">
+    <Icon name="note" size={16} />
+    {t('home.recentNotes')}
+  </h3>
+
+  <div class="notes-body">
+    <div class="notes-feed">
+      {
+        recent.map((n) => (
+          <Sticky
+            compact
+            decoration="none"
+            corner={n.data.mood}
+            href={`/notes#${n.id}`}
+            seed={n.id}
+            class="note-sticky"
+          >
+            <p class="note-text">{truncate(plain(n.body ?? ''), 70)}</p>
+            <time class="note-time" datetime={n.data.date.toISOString()}>
+              {formatRelative(n.data.date)}
+            </time>
+          </Sticky>
+        ))
+      }
+    </div>
+
+    <a class="notes-more link-underline" href="/notes">{t('common.more')} →</a>
+  </div>
+</div>
+
+<style>
+  .notes-card {
+    padding: 0;
+    /* 取消 overflow:hidden，避免父级裁剪便签内容 */
+  }
+  .notes-title {
+    margin: 0;
+  }
+  .notes-title :global(svg) {
+    color: var(--brand);
+  }
+  .notes-body {
+    padding: 0.85rem 1.1rem 1.05rem;
+  }
+  .notes-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .note-text {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    /* 侧栏高度限制解除后，给碎碎念更多展示行数，减少信息损失 */
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+  }
+  .note-time {
+    display: block;
+    margin-block-start: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+  }
+  .notes-more {
+    display: inline-block;
+    margin-block-start: 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--brand-hover);
+  }
+</style>

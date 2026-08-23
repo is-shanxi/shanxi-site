@@ -1,0 +1,162 @@
+---
+/**
+ * 右侧栏：鲸鱼娘 Q 版吉祥物卡（grill-me 第 7 轮换金装）。
+ *
+ * 原图（深海鲸鱼娘）作为底图保留，靠 CSS filter 将其偏移到
+ * 「深海军背金礼鲸」色彩：去饱和 + 偏暖 + 蓝色微偏冷，与新
+ * 主题古典型洛丽塔调一致。
+ *
+ * 形象灵感：上善无形的原创角色「溟月」（CC BY-NC-SA 4.0）。
+ */
+---
+
+<div class="card card-solid ff-card mascot-card reveal">
+  <h3 class="section-title ff-title">
+    {/* 鲸尾小图标 */}
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+      <path
+        d="M12 5.2c-3.4 0-6.4 2.1-7.5 5.3-.4 1-1.4 1.5-2.3 1 .8 1.7 2.5 2.8 4.5 2.6 1.3 1.5 3.2 2.4 5.3 2.4s4-0.9 5.3-2.4c2 .2 3.7-.9 4.5-2.6-.9.5-1.9 0-2.3-1-1.1-3.2-4.1-5.3-7.5-5.3Z"
+      ></path>
+    </svg>
+    鲸鱼娘
+  </h3>
+
+  <div class="mascot-body">
+    <div class="mascot-figure">
+      <img
+        src="/whale-mascot.png"
+        alt="鲸鱼娘 Q 版吉祥物"
+        width="220"
+        height="220"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="mascot-bubble b1" aria-hidden="true"></span>
+      <span class="mascot-bubble b2" aria-hidden="true"></span>
+      <span class="mascot-bubble b3" aria-hidden="true"></span>
+    </div>
+    <p class="mascot-line">今天也要一起加油呀～</p>
+  </div>
+</div>
+
+<style>
+  .mascot-card {
+    padding: 0;
+    overflow: hidden;
+  }
+  .ff-title {
+    padding: 1rem 1.1rem 0.85rem;
+  }
+  .ff-title svg {
+    color: var(--gold);
+    flex: none;
+  }
+
+  .mascot-body {
+    padding: 0.9rem 1.1rem 1.15rem;
+    border-block-start: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  /* 奶油 + 金色卷草底托，让插画的浅色底自然融入新主题 */
+  .mascot-figure {
+    position: relative;
+    inline-size: 100%;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-md);
+    background:
+      radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--gold-soft) 80%, transparent), transparent 65%),
+      linear-gradient(180deg, var(--bg-soft), color-mix(in oklab, var(--gold-soft) 60%, transparent));
+    border: 1px solid var(--border-strong);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--gold) 30%, transparent);
+  }
+  .mascot-figure img {
+    inline-size: 78%;
+    block-size: auto;
+    /* 让插画底部与底托衔接更柔 */
+    mask-image: linear-gradient(180deg, #000 82%, transparent 99%);
+    animation: mascot-float 5.5s var(--ease-soft) infinite alternate;
+    /* 染色滤镜：去饱和 + 偏蓝紫 + 微亮 — 让深海鲸鱼融入海军金调 */
+    filter:
+      saturate(0.7)
+      hue-rotate(-8deg)
+      brightness(0.96)
+      contrast(0.92);
+  }
+  @keyframes mascot-float {
+    to {
+      transform: translateY(-6px);
+    }
+  }
+
+  /* 装饰气泡改成金粉 */
+  .mascot-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 32% 30%,
+      rgb(255 250 230 / 0.95),
+      color-mix(in oklab, var(--gold) 50%, transparent) 55%,
+      transparent 72%
+    );
+    border: 1px solid color-mix(in oklab, var(--gold) 60%, transparent);
+    box-shadow: 0 0 10px color-mix(in oklab, var(--gold) 30%, transparent);
+    opacity: 0.7;
+    animation: mascot-bubble 4.5s ease-in infinite;
+  }
+  .b1 {
+    inline-size: 10px;
+    block-size: 10px;
+    inset-inline-start: 18%;
+    inset-block-end: 12%;
+  }
+  .b2 {
+    inline-size: 7px;
+    block-size: 7px;
+    inset-inline-start: 26%;
+    inset-block-end: 8%;
+    animation-delay: 1.4s;
+  }
+  .b3 {
+    inline-size: 13px;
+    block-size: 13px;
+    inset-inline-end: 16%;
+    inset-block-end: 16%;
+    animation-delay: 2.6s;
+  }
+  @keyframes mascot-bubble {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.78;
+    }
+    100% {
+      transform: translateY(-56px);
+      opacity: 0;
+    }
+  }
+
+  .mascot-line {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mascot-figure img,
+    .mascot-bubble {
+      animation: none;
+    }
+  }
+</style>

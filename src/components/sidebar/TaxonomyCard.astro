@@ -1,0 +1,156 @@
+---
+/**
+ * 左侧栏：分类 + 标签云。
+ * 分类按频次排序，标签云字号随频次缩放。链接走 /blog 的查询参数，
+ * 由博客列表页的客户端脚本完成过滤（纯静态也能用）。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+import { cx } from '@/lib/utils';
+
+interface Props {
+  categories: { name: string; count: number }[];
+  tags: { name: string; count: number }[];
+  /** 标签云最多展示几项 */
+  tagLimit?: number;
+}
+
+const { categories, tags, tagLimit = 18 } = Astro.props;
+const t = useTranslations();
+
+const topTags = tags.slice(0, tagLimit);
+const counts = topTags.map((x) => x.count);
+const min = Math.min(...counts, 1);
+const max = Math.max(...counts, 1);
+// 频次 → 字号（0.8rem ~ 1.05rem）
+const sizeFor = (c: number) =>
+  max === min ? 0.92 : 0.8 + ((c - min) / (max - min)) * 0.25;
+---
+
+<div class="card card-solid ff-card tax reveal">
+  <section class="tax-block">
+    <h3 class="section-title ff-title tax-title">
+      <Icon name="layers" size={16} />
+      {t('sidebar.categories')}
+    </h3>
+    <div class="tax-block-body">
+      <ul class="cat-list">
+        {
+          categories.map((c) => (
+            <li>
+              <a class="cat-item" href={`/blog?category=${encodeURIComponent(c.name)}`}>
+                <span class="cat-dot" />
+                <span class="cat-name">{c.name}</span>
+                <span class="cat-count">{c.count}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="tax-block">
+    <h3 class="section-title ff-title tax-title">
+      <Icon name="tag" size={16} />
+      {t('sidebar.tags')}
+    </h3>
+    <div class="tax-block-body">
+      <div class="tag-cloud">
+        {
+          topTags.map((tg) => (
+            <a
+              class="tag-bubble"
+              href={`/blog?tag=${encodeURIComponent(tg.name)}`}
+              style={`font-size:${sizeFor(tg.count).toFixed(3)}rem`}
+              data-count={tg.count}
+            >
+              #{tg.name}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .tax {
+    padding: 0;
+    /* 取消 overflow:hidden，让标签云等内容在侧栏自然展开 */
+  }
+  .tax-block + .tax-block {
+    border-block-start: 1px solid var(--border);
+  }
+  .tax-block-body {
+    padding: 0.9rem 1.1rem 1.05rem;
+  }
+  .tax-title {
+    margin: 0;
+  }
+  .tax-title :global(svg) {
+    color: var(--brand);
+  }
+
+  .cat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .cat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.34rem 0.6rem;
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    transition: all var(--dur-fast) var(--ease-soft);
+  }
+  .cat-item:hover {
+    background: var(--brand-soft);
+    color: var(--brand-hover);
+    transform: translateX(3px);
+  }
+  .cat-dot {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: var(--brand);
+    opacity: 0.55;
+    flex: none;
+  }
+  .cat-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cat-count {
+    font-size: 0.74rem;
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.5rem;
+    align-items: baseline;
+  }
+  .tag-bubble {
+    color: var(--text-muted);
+    line-height: 1.5;
+    transition: color var(--dur-fast) var(--ease-soft);
+  }
+  .tag-bubble:hover {
+    color: var(--brand-hover);
+  }
+  .tag-bubble[data-count='1'] {
+    opacity: 0.72;
+  }
+</style>

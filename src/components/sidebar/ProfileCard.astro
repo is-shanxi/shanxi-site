@@ -1,0 +1,133 @@
+---
+/**
+ * 左侧栏顶部：站长名片。
+ * 头像 + 名字 + 身份 + 社交入口，是每页都出现的「关于站长」模块。
+ * Firefly 卡片风格：标题栏 + 图标 + 底部分隔。
+ */
+import Avatar from '@/components/ui/Avatar.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { AUTHOR, SOCIALS } from '@/config';
+import { useTranslations } from '@/i18n';
+import { cx } from '@/lib/utils';
+
+const t = useTranslations();
+---
+
+<div class="card card-solid ff-card profile reveal">
+  <h3 class="section-title ff-title">
+    <Icon name="user" size={16} />
+    {t('sidebar.profile')}
+  </h3>
+
+  <div class="profile-body">
+    <div class="profile-head">
+      <Avatar size={60} ring={true} />
+      <div class="profile-id">
+        <span class="profile-name">{AUTHOR.name}</span>
+        <span class="profile-handle">@{AUTHOR.handle}</span>
+      </div>
+    </div>
+
+    <p class="profile-role">
+      <Icon name="terminal" size={14} />
+      {AUTHOR.role}
+    </p>
+
+    <p class="profile-bio">{AUTHOR.bio}</p>
+
+    <ul class="profile-socials" aria-label={t('sidebar.profile')}>
+      {
+        SOCIALS.map((s) => (
+          <li>
+            <a
+              class={cx('social-link', s.displayOnly && 'is-static')}
+              href={s.href}
+              title={s.hint ?? s.label}
+              aria-label={s.label}
+              {...(s.displayOnly ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+              data-hint={s.hint}
+            >
+              <Icon name={s.icon} size={17} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .profile {
+    padding: 0;
+    /* 取消 overflow:hidden，避免在窄栏中被误裁 */
+  }
+  .profile-body {
+    padding: 1rem 1.1rem 1.15rem;
+  }
+  .profile-head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .profile-id {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .profile-name {
+    font-family: var(--font-display);
+    font-size: 1.18rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .profile-handle {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-subtle);
+  }
+  .profile-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-block: 0.85rem 0.55rem;
+    font-size: 0.82rem;
+    color: var(--brand-hover);
+    font-weight: 600;
+  }
+  .profile-bio {
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .profile-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .social-link {
+    display: grid;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: var(--r-full);
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--text-muted);
+    transition: all var(--dur) var(--ease-soft);
+  }
+  .social-link:hover,
+  .social-link:focus-visible {
+    color: var(--brand-contrast);
+    background: var(--brand);
+    border-color: var(--brand);
+    transform: translateY(-2px);
+  }
+  .social-link.is-static {
+    cursor: help;
+  }
+</style>

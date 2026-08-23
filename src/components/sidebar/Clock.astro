@@ -1,0 +1,58 @@
+---
+/**
+ * 右侧栏：实时数字时钟（客户端按访客真实时间渲染）。
+ * 禁用 JS 时显示占位文本 "--:--:--"，页面其余内容不受影响。
+ * 标题复用 sidebar.nowPlaying（此刻），呼应 firefly「此刻」组件的语义。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
+---
+
+<div class="card card-solid ff-card clock-card reveal" data-clock>
+  <h3 class="section-title ff-title">
+    <Icon name="clock" size={16} />
+    {t('sidebar.nowPlaying')}
+  </h3>
+
+  <div class="clock-body">
+    <div class="clock-time" data-clock-time>--:--:--</div>
+    <div class="clock-date" data-clock-date>----年--月--日 星期-</div>
+  </div>
+</div>
+
+<style>
+  .clock-card {
+    padding: 0;
+    overflow: hidden;
+  }
+  .clock-card .section-title :global(svg) {
+    color: var(--gold);
+  }
+
+  .clock-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.9rem 1.1rem 1.1rem;
+  }
+
+  .clock-time {
+    font-family: var(--font-display);
+    font-weight: 720;
+    /* 等宽数字，跳动时不抖动 */
+    font-variant-numeric: tabular-nums;
+    font-size: 1.9rem;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    color: var(--brand-hover);
+    text-shadow: 0 1px 0 var(--surface);
+  }
+
+  .clock-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+</style>
