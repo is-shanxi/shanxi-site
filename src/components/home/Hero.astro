@@ -100,6 +100,22 @@ const greeting = t(greetingKey());
         opacity="0.6"></path>
       <circle cx="300" cy="14" r="3" fill="var(--gold)" opacity="0.85"></circle>
     </svg>
+
+    {/* 鲸鱼娘双立绘：插件 maid-atelier 原素材，落座底角 */}
+    <img
+      class="maid maid-l"
+      src="/skins/maid-atelier/maid-left.webp"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+    <img
+      class="maid maid-r"
+      src="/skins/maid-atelier/maid-right.webp"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
   </div>
 
   <div class="hero-inner">
@@ -242,6 +258,32 @@ const greeting = t(greetingKey());
   }
   .filigree-top    { inset-block-start: 6px; }
   .filigree-bottom { inset-block-end: 6px; }
+
+  /* 鲸鱼娘双立绘：插件 maid-atelier 落位策略——
+     贴 Hero 底角、以高度百分比缩放，暗色下降亮去饱和 */
+  .maid {
+    position: absolute;
+    bottom: 0;
+    z-index: 0;
+    inline-size: auto;
+    max-width: none;
+    block-size: 96%;
+    object-fit: contain;
+    object-position: center bottom;
+    pointer-events: none;
+    filter: drop-shadow(0 20px 24px rgb(27 44 91 / 0.16));
+  }
+  .maid-l { left: clamp(4px, 2.5%, 36px); }
+  .maid-r { right: clamp(4px, 2.5%, 36px); block-size: 90%; }
+  :global(.dark) .maid {
+    filter:
+      brightness(0.84)
+      saturate(0.92)
+      drop-shadow(0 22px 28px rgb(0 0 0 / 0.3));
+  }
+  @media (max-width: 1024px) {
+    .maid { display: none; }
+  }
 
   /* ── 内容 ─────────────────────────────── */
   .hero-inner {

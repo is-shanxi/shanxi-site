@@ -3,6 +3,7 @@ import { NAV, SOCIALS, AUTHOR } from '@/config';
 import { useTranslations, type TranslationKey } from '@/i18n';
 import Icon from '@/components/ui/Icon.astro';
 import Avatar from '@/components/ui/Avatar.astro';
+import MaidBow from '@/components/ui/MaidBow.astro';
 
 const t = useTranslations();
 const path = Astro.url.pathname;
@@ -14,6 +15,7 @@ const isActive = (href: string) =>
   <div class="drawer-scrim" data-drawer-close></div>
 
   <aside class="drawer-panel" role="dialog" aria-label="站点导航" aria-modal="true">
+    <div class="maid-trim drawer-trim"></div>
     <div class="drawer-head">
       <div class="drawer-profile">
         <Avatar size={44} />
@@ -50,25 +52,30 @@ const isActive = (href: string) =>
     </nav>
 
     <div class="drawer-socials">
-      {
-        SOCIALS.map((s) =>
-          s.displayOnly ? (
-            <span class="social-btn" title={s.hint} aria-label={s.label}>
-              <Icon name={s.icon} size={17} />
-            </span>
-          ) : (
-            <a
-              class="social-btn"
-              href={s.href}
-              target={s.href.startsWith('http') ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              aria-label={s.label}
-            >
-              <Icon name={s.icon} size={17} />
-            </a>
-          ),
-        )
-      }
+      <div class="drawer-bow">
+        <MaidBow width={72} />
+      </div>
+      <div class="drawer-social-row">
+        {
+          SOCIALS.map((s) =>
+            s.displayOnly ? (
+              <span class="social-btn" title={s.hint} aria-label={s.label}>
+                <Icon name={s.icon} size={17} />
+              </span>
+            ) : (
+              <a
+                class="social-btn"
+                href={s.href}
+                target={s.href.startsWith('http') ? '_blank' : undefined}
+                rel="noopener noreferrer"
+                aria-label={s.label}
+              >
+                <Icon name={s.icon} size={17} />
+              </a>
+            ),
+          )
+        }
+      </div>
     </div>
   </aside>
 </div>
@@ -98,7 +105,29 @@ const isActive = (href: string) =>
     opacity: 1;
   }
 
+  /* 抽屉侧栏：深藏青竖栏 + 鎏金花边（插件 sidebar-fill，双主题恒定）。
+     令牌作用域让栏内文字自动切浅色。 */
   .drawer-panel {
+    --bg: #0b1941;
+    --bg-soft: #14224e;
+    --surface: rgb(16 32 77 / 0.66);
+    --surface-glass: rgb(11 25 66 / 0.88);
+    --surface-hover: rgb(28 50 107 / 0.62);
+    --border: rgb(151 169 216 / 0.22);
+    --border-strong: rgb(197 164 104 / 0.64);
+    --text: #e5eaf6;
+    --text-muted: #bdc9e3;
+    --text-subtle: #96a6c9;
+    --text-inverse: #10204d;
+    --brand: #9bb0e1;
+    --brand-hover: #a3b7e5;
+    --brand-soft: rgb(155 176 225 / 0.18);
+    --brand-ring: rgb(163 183 229 / 0.3);
+    --brand-contrast: #10204d;
+    --gold: #d3b477;
+    --gold-hover: #e5cb94;
+    --gold-soft: rgb(211 180 119 / 0.15);
+    --gold-ring: rgb(211 180 119 / 0.35);
     position: absolute;
     inset-block: 0;
     inset-inline-end: 0;
@@ -107,23 +136,25 @@ const isActive = (href: string) =>
     flex-direction: column;
     gap: 1.1rem;
     padding: 1.1rem;
-    background: var(--surface);
-    border-inline-start: 1px solid color-mix(in oklab, var(--gold) 36%, var(--border));
+    background: linear-gradient(
+      180deg,
+      rgb(16 32 77 / 0.96),
+      rgb(9 19 51 / 0.97)
+    );
+    border-inline-start: 1px solid rgb(197 164 104 / 0.5);
     box-shadow: var(--shadow-lg);
     transform: translateX(100%);
     transition: transform var(--dur-slow) var(--ease-soft);
     overflow-y: auto;
   }
-  /* 抽屉侧栏：深海藏蓝纵向渐变 */
-  .dark .drawer-panel {
-    background: linear-gradient(
-      180deg,
-      rgb(24 40 72 / 0.88),
-      rgb(15 32 64 / 0.96)
-    );
-  }
   .drawer.is-open .drawer-panel {
     transform: none;
+  }
+
+  .drawer-trim {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
   }
 
   .drawer-head {
@@ -213,8 +244,20 @@ const isActive = (href: string) =>
   .drawer-socials {
     margin-block-start: auto;
     display: flex;
-    gap: 0.45rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
     padding-block-start: 1rem;
+  }
+  .drawer-bow {
+    --bow-fill: #1c326b;
+    --bow-accent: var(--gold);
+    opacity: 0.95;
+  }
+  .drawer-social-row {
+    display: flex;
+    gap: 0.45rem;
+    padding-block-start: 0.9rem;
     border-block-start: 1px solid var(--border);
   }
   .social-btn {

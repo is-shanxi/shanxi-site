@@ -1,5 +1,6 @@
 ---
 import Icon from '@/components/ui/Icon.astro';
+import MaidBow from '@/components/ui/MaidBow.astro';
 import { useTranslations } from '@/i18n';
 
 const t = useTranslations();
@@ -7,49 +8,9 @@ const t = useTranslations();
 
 <dialog class="search-dialog" data-search-dialog aria-label={t('search.open')}>
   <div class="search-panel">
+    <div class="maid-lace maid-lace-top" aria-hidden="true"></div>
     <div class="search-bow" aria-hidden="true">
-      <svg width="66" height="30" viewBox="0 0 66 30" fill="none">
-        <path
-          d="M32 15C26 7 16 5 12 9c-4 4 0 12 8 13 5 .6 9-3 12-7z"
-          fill="var(--gold)"
-          fill-opacity="0.22"
-          stroke="var(--gold)"
-          stroke-width="1.1"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M34 15c6-8 16-10 20-6 4 4 0 12-8 13-5 .6-9-3-12-7z"
-          fill="var(--gold)"
-          fill-opacity="0.22"
-          stroke="var(--gold)"
-          stroke-width="1.1"
-          stroke-linejoin="round"
-        />
-        <ellipse
-          cx="33"
-          cy="15"
-          rx="3.2"
-          ry="3.8"
-          fill="var(--gold)"
-          fill-opacity="0.5"
-          stroke="var(--gold)"
-          stroke-width="1.1"
-        />
-        <path
-          d="M31 19c-4 5-9 7-15 6.5"
-          stroke="var(--gold)"
-          stroke-width="1.1"
-          stroke-linecap="round"
-          opacity="0.7"
-        />
-        <path
-          d="M35 19c4 5 9 7 15 6.5"
-          stroke="var(--gold)"
-          stroke-width="1.1"
-          stroke-linecap="round"
-          opacity="0.7"
-        />
-      </svg>
+      <MaidBow width={96} />
     </div>
     <div class="search-bar">
       <Icon name="search" size={18} class="text-[var(--text-subtle)]" />
@@ -75,6 +36,7 @@ const t = useTranslations();
     <div class="search-results" data-search-results>
       <p class="search-tip">{t('search.hint')}</p>
     </div>
+    <div class="maid-lace maid-lace-bottom" aria-hidden="true"></div>
   </div>
 </dialog>
 
@@ -223,8 +185,11 @@ const t = useTranslations();
     overflow: visible;
   }
   .search-dialog::backdrop {
-    background: color-mix(in oklab, var(--bg) 55%, rgb(8 18 46 / 0.6));
+    background: rgb(220 230 245 / 0.4);
     backdrop-filter: blur(6px);
+  }
+  .dark .search-dialog::backdrop {
+    background: rgb(8 15 39 / 0.5);
   }
   .search-dialog[open] {
     animation: dialog-in 260ms var(--ease-spring) both;
@@ -257,15 +222,20 @@ const t = useTranslations();
     pointer-events: none;
   }
 
-  /* 缎带蝴蝶结：骑在面板顶边中央 */
+  /* 标志性大蝴蝶结：藏蓝缎带 + 鎏金描边，骑在面板顶边中央 */
   .search-bow {
     position: absolute;
-    top: -14px;
+    top: -24px;
     left: 50%;
     translate: -50% 0;
     z-index: 1;
     pointer-events: none;
-    filter: drop-shadow(0 1px 2px rgb(21 34 74 / 0.18));
+    --bow-fill: #1c326b;
+    --bow-accent: var(--gold);
+  }
+  .dark .search-bow {
+    --bow-fill: #24346b;
+    --bow-accent: var(--gold);
   }
 
   .search-bar {
