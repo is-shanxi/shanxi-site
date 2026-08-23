@@ -5,19 +5,21 @@
  * 视觉层次（全部用 SVG 与 CSS 实现，零外图依赖）：
  *   1. 深海军渐变背 + 顶/底三层径向光斑，模拟水晶吊灯氛围
  *   2. 左/右两列金色卷草幕布（inline SVG，~1.4KB）
- *   3. 顶部装饰：丝带蝴蝶结 + 卷草弯月
+ *   3. 顶部徽记：水晶吊灯 SVG + 两侧鎏金卷草分隔线（火苗微光闪烁）
  *   4. 文案：问候 + Playfair Display 衬线大标题 + 打字机标语 + CTA
+ *      CTA 三枚：鎏金描边主按钮（hover 微光扫过）/ 幽灵按钮 / GitHub 社交按钮
  *
  * Header 自带毛玻璃，自然浮于 Hero 之上；
  * 用 padding 把内容推到 Header 下方。
  */
 import Icon from '@/components/ui/Icon.astro';
-import { AUTHOR, SITE } from '@/config';
+import { AUTHOR, SITE, SOCIALS } from '@/config';
 import { useTranslations } from '@/i18n';
 import { greetingKey } from '@/lib/utils';
 
 const t = useTranslations();
 const greeting = t(greetingKey());
+const github = SOCIALS.find((s) => s.key === 'github');
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -105,6 +107,64 @@ const greeting = t(greetingKey());
 
   <div class="hero-inner">
     <div class="hero-copy">
+      {/* 顶部徽记：水晶吊灯 + 两侧鎏金卷草分隔线（呼应女仆工坊水晶吊灯设定） */}
+      <div class="hero-crest" aria-hidden="true">
+        <svg class="crest-line crest-line-l" viewBox="0 0 200 14" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="crestFadeL" x1="1" y1="0" x2="0" y2="0">
+              <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.95"></stop>
+              <stop offset="70%" stop-color="var(--gold)" stop-opacity="0.45"></stop>
+              <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"></stop>
+            </linearGradient>
+          </defs>
+          <path d="M196 7 C 150 3 70 11 16 7" fill="none" stroke="url(#crestFadeL)" stroke-width="1.2"></path>
+          <path d="M8 7 L13 3.2 L18 7 L13 10.8 Z" fill="var(--gold)" opacity="0.85"></path>
+          <circle cx="24" cy="7" r="1.3" fill="var(--gold)" opacity="0.6"></circle>
+        </svg>
+
+        <svg class="crest-svg" viewBox="0 0 96 62">
+          {/* 吊链与顶座 */}
+          <circle cx="48" cy="4" r="2.2" fill="var(--gold)"></circle>
+          <line x1="48" y1="6" x2="48" y2="13" stroke="var(--gold)" stroke-width="1.2"></line>
+          <path d="M39 14 Q48 9 57 14" fill="none" stroke="var(--gold)" stroke-width="1.2"></path>
+          <line x1="48" y1="14" x2="48" y2="24" stroke="var(--gold)" stroke-width="1.2"></line>
+          {/* 双层灯臂 */}
+          <path d="M48 24 C 40 24 30 26 22 33" fill="none" stroke="var(--gold)" stroke-width="1.1"></path>
+          <path d="M48 24 C 56 24 66 26 74 33" fill="none" stroke="var(--gold)" stroke-width="1.1"></path>
+          <path d="M48 27 C 44 28 41 30 38 35" fill="none" stroke="var(--gold)" stroke-width="1"></path>
+          <path d="M48 27 C 52 28 55 30 58 35" fill="none" stroke="var(--gold)" stroke-width="1"></path>
+          {/* 烛台 + 火苗（火苗有微光闪烁） */}
+          <ellipse cx="22" cy="34" rx="2.2" ry="2.6" fill="var(--gold)"></ellipse>
+          <ellipse cx="74" cy="34" rx="2.2" ry="2.6" fill="var(--gold)"></ellipse>
+          <ellipse cx="38" cy="36" rx="2" ry="2.4" fill="var(--gold)"></ellipse>
+          <ellipse cx="58" cy="36" rx="2" ry="2.4" fill="var(--gold)"></ellipse>
+          <circle class="crest-flame" cx="22" cy="29.5" r="1.4" fill="#f6e7bd"></circle>
+          <circle class="crest-flame" cx="74" cy="29.5" r="1.4" fill="#f6e7bd"></circle>
+          <circle class="crest-flame" cx="38" cy="31.5" r="1.2" fill="#f6e7bd"></circle>
+          <circle class="crest-flame" cx="58" cy="31.5" r="1.2" fill="#f6e7bd"></circle>
+          {/* 水晶坠（菱形泪滴） */}
+          <path d="M22 37.5 l3 5 -3 7 -3 -7 z" fill="var(--gold)" opacity="0.75"></path>
+          <path d="M74 37.5 l3 5 -3 7 -3 -7 z" fill="var(--gold)" opacity="0.75"></path>
+          <path d="M38 39.5 l2.6 4.4 -2.6 6.2 -2.6 -6.2 z" fill="var(--gold)" opacity="0.65"></path>
+          <path d="M58 39.5 l2.6 4.4 -2.6 6.2 -2.6 -6.2 z" fill="var(--gold)" opacity="0.65"></path>
+          <path d="M48 31 l4 7.5 -4 9.5 -4 -7.5 z" fill="var(--gold)" opacity="0.85"></path>
+          <path d="M42 44 L48 48.5 L54 44" fill="none" stroke="var(--gold)" stroke-width="0.9" opacity="0.5"></path>
+        </svg>
+
+        <svg class="crest-line crest-line-r" viewBox="0 0 200 14" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="crestFadeR" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.95"></stop>
+              <stop offset="70%" stop-color="var(--gold)" stop-opacity="0.45"></stop>
+              <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"></stop>
+            </linearGradient>
+          </defs>
+          <path d="M4 7 C 50 3 130 11 184 7" fill="none" stroke="url(#crestFadeR)" stroke-width="1.2"></path>
+          <path d="M192 7 L187 3.2 L182 7 L187 10.8 Z" fill="var(--gold)" opacity="0.85"></path>
+          <circle cx="176" cy="7" r="1.3" fill="var(--gold)" opacity="0.6"></circle>
+        </svg>
+      </div>
+
       <p class="hero-greeting">
         <span class="greet-dot" aria-hidden="true"></span>
         {greeting}，欢迎来到
@@ -125,7 +185,7 @@ const greeting = t(greetingKey());
       <p class="hero-bio">{SITE.description}</p>
 
       <div class="hero-actions">
-        <a class="btn btn-coral" href="/blog">
+        <a class="btn btn-coral btn-hero-main" href="/blog">
           <Icon name="book" size={16} />
           读读文章
         </a>
@@ -133,6 +193,17 @@ const greeting = t(greetingKey());
           <Icon name="user" size={16} />
           认识我
         </a>
+        {github && (
+          <a
+            class="btn btn-hero-social"
+            href={github.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="github" size={16} />
+            GitHub
+          </a>
+        )}
       </div>
     </div>
   </div>
@@ -256,6 +327,36 @@ const greeting = t(greetingKey());
     text-shadow: 0 2px 8px rgb(8 18 46 / 0.4);
   }
 
+  /* ── 顶部徽记：水晶吊灯 + 卷草分隔线 ── */
+  .hero-crest {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.6vw, 1rem);
+    margin-block-end: 1.15rem;
+  }
+  .crest-svg {
+    inline-size: clamp(58px, 8vw, 88px);
+    block-size: auto;
+    flex: none;
+    opacity: 0.95;
+    filter: drop-shadow(0 2px 10px rgb(197 164 104 / 0.4));
+  }
+  .crest-line {
+    inline-size: clamp(64px, 14vw, 168px);
+    block-size: 14px;
+    flex: none;
+    opacity: 0.85;
+  }
+  .crest-flame {
+    animation: twinkle 2.8s var(--ease-soft) infinite;
+  }
+  .crest-flame + .crest-flame { animation-delay: 0.7s; }
+  @keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.45; }
+  }
+
   .hero-greeting {
     display: inline-flex;
     align-items: center;
@@ -355,6 +456,56 @@ const greeting = t(greetingKey());
     justify-content: center;
   }
 
+  /* 主按钮升级：鎏金描边 + hover 微光扫过 */
+  .btn-hero-main {
+    position: relative;
+    overflow: hidden;
+    border-color: color-mix(in oklab, var(--gold) 62%, transparent);
+    box-shadow:
+      0 8px 18px -8px var(--coral-ring),
+      0 0 0 1px color-mix(in oklab, var(--gold) 28%, transparent),
+      0 0 22px -6px var(--gold-ring);
+  }
+  .btn-hero-main::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 32%,
+      rgb(255 246 222 / 0.55) 50%,
+      transparent 68%
+    );
+    translate: -130% 0;
+    transition: translate 0.75s var(--ease-soft);
+  }
+  .btn-hero-main:hover::after {
+    translate: 130% 0;
+  }
+  .btn-hero-main:hover {
+    border-color: var(--gold-hover);
+    box-shadow:
+      0 12px 26px -8px var(--coral-ring),
+      0 0 0 1px var(--gold-hover),
+      0 0 30px -6px var(--gold-ring);
+  }
+
+  /* GitHub 社交按钮：与幽灵按钮同族，鎏金细描边 */
+  .btn-hero-social {
+    background: color-mix(in oklab, white 6%, transparent);
+    color: #dfe6f3;
+    border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .btn-hero-social:hover {
+    border-color: var(--gold);
+    color: #fdfbf7;
+    background: color-mix(in oklab, var(--gold-soft) 14%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px -10px var(--gold-ring);
+  }
+
   /* Hero 内的幽灵按钮：深海图上用浅色描边/文字 */
   .btn-hero-ghost {
     background: color-mix(in oklab, white 8%, transparent);
@@ -379,11 +530,14 @@ const greeting = t(greetingKey());
     .col { inline-size: 50px; opacity: 0.65; }
     .glow-1 { inline-size: 18rem; block-size: 18rem; }
     .glow-2 { inline-size: 20rem; block-size: 20rem; }
+    .crest-line { inline-size: clamp(44px, 12vw, 90px); }
+    .hero-crest { margin-block-end: 0.9rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .greet-dot,
-    .type-caret {
+    .type-caret,
+    .crest-flame {
       animation: none !important;
     }
   }
