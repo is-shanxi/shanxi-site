@@ -8,40 +8,40 @@
 
 /* ═══════════════════════════════════════════════════════════════
    1. 设计令牌 —— 语义化命名，绝不在组件里写死色值
-   女仆工坊：深海藏蓝渐变 #0F2040~#305890 + 奶白 #F8F5F0
-   点缀藏青 #182848 / 哑光浅金 #C8B898，柔光低对比
+   鲸鱼娘·深海女仆工坊（dsh-deep-whale / maid-atelier）
+   日光欧式水晶大厅：porcelain #f8f6f0 + indigo #526aa8 + 鎏金 #c5a468
    ═══════════════════════════════════════════════════════════════ */
 :root {
-  /* ── 表面：奶白昼间工坊 ── */
-  --bg: #f8f5f0;
-  --bg-soft: #f1ece2;
-  --surface: #fdfbf7;
-  --surface-glass: rgb(253 251 247 / 0.74);
-  --surface-hover: #f3eee4;
-  --bg-scene: linear-gradient(170deg, #fdfbf8 0%, #f8f5f0 46%, #eee8db 100%);
+  /* ── 表面：日光水晶大厅（porcelain 白 + 浅雾蓝） ── */
+  --bg: #dce6f5;
+  --bg-soft: #e2e8f5;
+  --surface: #f8f6f0;
+  --surface-glass: rgb(248 250 255 / 0.72);
+  --surface-hover: #e2e8f5;
+  --bg-scene: linear-gradient(170deg, #eef3fb 0%, #dce6f5 55%, #d0ddf0 100%);
 
-  /* ── 描边：哑光浅金细线 ── */
-  --border: #e3ddd0;
-  --border-strong: #c8b898;
+  /* ── 描边：蓝灰细线 + 鎏金描边 ── */
+  --border: rgb(71 91 145 / 0.18);
+  --border-strong: rgb(197 164 104 / 0.64);
 
-  /* ── 文字：藏青正文（昼间） ── */
-  --text: #1c2a48;
-  --text-muted: #4d5770;
-  --text-subtle: #8b91a4;
-  --text-inverse: #f8f5f0;
+  /* ── 文字：藏青墨色（maid-ink） ── */
+  --text: #172347;
+  --text-muted: #4d5d7f;
+  --text-subtle: #6f7c99;
+  --text-inverse: #f8f6f0;
 
-  /* ── 品牌：深海藏蓝（渐变亮端） ── */
-  --brand: #305890;
-  --brand-hover: #1c3a68;
-  --brand-soft: #e4eaf2;
-  --brand-ring: rgb(48 88 144 / 0.26);
-  --brand-contrast: #f8f5f0;
+  /* ── 品牌：长春花蓝（maid-indigo） ── */
+  --brand: #526aa8;
+  --brand-hover: #405a99;
+  --brand-soft: #e1e7f5;
+  --brand-ring: rgb(82 106 168 / 0.3);
+  --brand-contrast: #f8f6f0;
 
-  /* ── 主点缀：哑光浅金 ── */
-  --gold: #c8b898;
-  --gold-hover: #a89468;
-  --gold-soft: #efe8d8;
-  --gold-ring: rgb(200 184 152 / 0.3);
+  /* ── 主点缀：鎏金（maid-gold） ── */
+  --gold: #c5a468;
+  --gold-hover: #a8894e;
+  --gold-soft: #e2cfaa;
+  --gold-ring: rgb(197 164 104 / 0.35);
 
   /* ── CTA 高亮：柔雾玫瑰，仅用于关键按钮 ── */
   --coral: #cf8f83;
@@ -66,12 +66,12 @@
   --warning: #d8a85a;
   --danger: #d96b5a;
 
-  /* ── 阴影（金边感：带一线金色外晕） ── */
-  --shadow-sm: 0 1px 2px rgb(21 34 74 / 0.06);
-  --shadow: 0 2px 4px rgb(21 34 74 / 0.05), 0 12px 28px -14px rgb(21 34 74 / 0.22);
-  --shadow-lg: 0 4px 8px rgb(21 34 74 / 0.06), 0 24px 48px -20px rgb(21 34 74 / 0.28);
-  --shadow-note: 0 1px 1px rgb(21 34 74 / 0.07), 0 8px 16px -10px rgb(21 34 74 / 0.3);
-  --shadow-gold: 0 0 0 1px rgb(200 163 90 / 0.22), 0 8px 22px -8px rgb(200 163 90 / 0.32);
+  /* ── 阴影：插件 maid-shadow（日光大厅漫射） ── */
+  --shadow-sm: 0 1px 2px rgb(15 30 72 / 0.08);
+  --shadow: 0 2px 8px rgb(15 30 72 / 0.12), 0 18px 54px rgb(15 30 72 / 0.2);
+  --shadow-lg: 0 4px 12px rgb(15 30 72 / 0.14), 0 24px 64px rgb(15 30 72 / 0.26);
+  --shadow-note: 0 1px 2px rgb(15 30 72 / 0.1), 0 10px 24px -12px rgb(15 30 72 / 0.22);
+  --shadow-gold: 0 0 0 1px rgb(197 164 104 / 0.24), 0 8px 22px -8px rgb(197 164 104 / 0.3);
 
   /* ── 圆角 ── */
   --r-xs: 6px;
@@ -116,36 +116,36 @@
 }
 
 .dark {
-  /* ── 表面：深海藏蓝渐变工坊（默认主题） ── */
-  --bg: #0f2040;
-  --bg-soft: #182848;
-  --surface: #16274a;
-  --surface-glass: rgb(20 38 74 / 0.5);
-  --surface-hover: #1d335c;
-  --bg-scene: linear-gradient(168deg, #305890 0%, #1c3a6b 30%, #0f2040 68%, #0b1830 100%);
+  /* ── 表面：深海夜色（maid night） ── */
+  --bg: #080f27;
+  --bg-soft: #121f43;
+  --surface: #121f43;
+  --surface-glass: rgb(13 25 59 / 0.74);
+  --surface-hover: #293f78;
+  --bg-scene: linear-gradient(170deg, #101c3e 0%, #080f27 60%, #060b1d 100%);
 
-  /* ── 描边：哑光浅金细线 + 藏青暗线 ── */
-  --border: #26365c;
-  --border-strong: #c8b898;
+  /* ── 描边：雾蓝细线 + 夜金描边 ── */
+  --border: rgb(151 169 216 / 0.2);
+  --border-strong: rgb(211 180 119 / 0.66);
 
-  /* ── 文字：中性灰正文，柔光低对比 ── */
-  --text: #d9dbe2;
-  --text-muted: #9aa3b8;
-  --text-subtle: #67718e;
-  --text-inverse: #0f2040;
+  /* ── 文字：月白正文（柔光低对比） ── */
+  --text: #e5eaf6;
+  --text-muted: #bdc9e3;
+  --text-subtle: #96a6c9;
+  --text-inverse: #080f27;
 
-  /* ── 品牌：海军蓝亮端，雾化处理 ── */
-  --brand: #7fa3d4;
-  --brand-hover: #a3c0e6;
-  --brand-soft: rgb(127 163 212 / 0.16);
-  --brand-ring: rgb(163 192 230 / 0.3);
-  --brand-contrast: #0f2040;
+  /* ── 品牌：雾长春花蓝 ── */
+  --brand: #9bb0e1;
+  --brand-hover: #a3b7e5;
+  --brand-soft: rgb(155 176 225 / 0.16);
+  --brand-ring: rgb(163 183 229 / 0.3);
+  --brand-contrast: #080f27;
 
-  /* ── 主点缀：哑光浅金（暗色下微提亮） ── */
-  --gold: #c8b898;
-  --gold-hover: #ddd0b0;
-  --gold-soft: rgb(200 184 152 / 0.14);
-  --gold-ring: rgb(200 184 152 / 0.32);
+  /* ── 主点缀：夜金（dark maid-gold） ── */
+  --gold: #d3b477;
+  --gold-hover: #e5cb94;
+  --gold-soft: rgb(211 180 119 / 0.15);
+  --gold-ring: rgb(211 180 119 / 0.35);
 
   /* ── CTA 高亮：柔雾玫瑰 ── */
   --coral: #d99a8e;
@@ -164,12 +164,12 @@
   --note-sage-bg: #1e2e26;
   --note-sage-br: #324a3c;
 
-  /* ── 阴影：柔和漫射，无硬边 ── */
-  --shadow-sm: 0 1px 2px rgb(4 10 24 / 0.32);
-  --shadow: 0 2px 4px rgb(4 10 24 / 0.22), 0 14px 32px -16px rgb(4 10 24 / 0.6);
-  --shadow-lg: 0 4px 8px rgb(4 10 24 / 0.26), 0 24px 52px -22px rgb(4 10 24 / 0.68);
-  --shadow-note: 0 1px 1px rgb(4 10 24 / 0.3), 0 8px 18px -10px rgb(4 10 24 / 0.64);
-  --shadow-gold: 0 0 0 1px rgb(200 184 152 / 0.16), 0 8px 22px -8px rgb(200 184 152 / 0.28);
+  /* ── 阴影：插件 maid-shadow（深海夜） ── */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow: 0 2px 10px rgb(0 0 0 / 0.3), 0 18px 58px rgb(0 0 0 / 0.38);
+  --shadow-lg: 0 4px 12px rgb(0 0 0 / 0.32), 0 24px 64px rgb(0 0 0 / 0.44);
+  --shadow-note: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 24px -12px rgb(0 0 0 / 0.5);
+  --shadow-gold: 0 0 0 1px rgb(211 180 119 / 0.2), 0 8px 22px -8px rgb(211 180 119 / 0.3);
 
   color-scheme: dark;
 }
@@ -261,8 +261,9 @@
       color var(--dur) var(--ease-soft);
   }
 
-  /* 柔光落地窗：天光自窗顶漫射，三道细窗棂竖线，
-     低透明度且向下淡出，绝不遮挡正文。 */
+  /* 欧式水晶大厅：插件 maid-atelier 宫殿背景 cover 铺底，
+     叠一层瓷白→不透明的渐进纱罩（上薄下厚），让 palace 仅作氛围光、
+     不抢正文阅读。 */
   body::before {
     content: '';
     position: fixed;
@@ -270,65 +271,53 @@
     z-index: -1;
     pointer-events: none;
     background:
-      /* 三道窗棂竖线（极细，仅在窗区可感） */
+      /* 可读性纱罩：顶部微透，下部瓷白半透，长文区几乎纯色 */
       linear-gradient(
-        90deg,
-        transparent 19.6%,
-        color-mix(in oklab, var(--gold) 9%, transparent) 19.9%,
-        transparent 20.2%
+        180deg,
+        rgb(248 250 255 / 0.32) 0%,
+        rgb(248 250 255 / 0.55) 38%,
+        rgb(248 250 255 / 0.82) 72%,
+        rgb(248 250 255 / 0.92) 100%
       ),
-      linear-gradient(
-        90deg,
-        transparent 49.9%,
-        color-mix(in oklab, var(--gold) 9%, transparent) 50.2%,
-        transparent 50.5%
-      ),
-      linear-gradient(
-        90deg,
-        transparent 79.8%,
-        color-mix(in oklab, var(--gold) 9%, transparent) 80.1%,
-        transparent 80.4%
-      ),
-      /* 窗顶天光漫射：柔和光池 */
+      /* 暖调漫射天光：水晶吊灯光池 */
       radial-gradient(
-        48rem 30rem at 50% -14%,
-        color-mix(in oklab, var(--gold) 18%, transparent) 0%,
-        transparent 66%
+        46rem 26rem at 50% -12%,
+        rgb(255 251 236 / 0.22) 0%,
+        transparent 64%
       ),
       radial-gradient(
-        28rem 22rem at 15% 14%,
-        color-mix(in oklab, var(--gold) 9%, transparent) 0%,
+        30rem 22rem at 16% 12%,
+        rgb(255 251 236 / 0.1) 0%,
         transparent 60%
       ),
       radial-gradient(
-        30rem 24rem at 85% 18%,
-        color-mix(in oklab, var(--gold) 8%, transparent) 0%,
+        32rem 24rem at 84% 16%,
+        rgb(255 251 236 / 0.08) 0%,
         transparent 62%
       ),
-      /* 地面暖色余晖 */
-      radial-gradient(
-        72rem 46rem at 50% 110%,
-        color-mix(in oklab, var(--brand) 20%, transparent) 0%,
-        transparent 72%
-      );
-    mask-image: linear-gradient(
-      180deg,
-      black 0%,
-      black 46%,
-      transparent 92%
-    );
-    -webkit-mask-image: linear-gradient(
-      180deg,
-      black 0%,
-      black 46%,
-      transparent 92%
-    );
-    opacity: 0.75;
+      /* 宫殿背景：插件 maid-atelier palace（日光水晶大厅） */
+      url('/skins/maid-atelier/palace-light.webp') center / cover no-repeat;
     transition: opacity var(--dur-slow) var(--ease-soft);
   }
 
   .dark body::before {
-    opacity: 0.6;
+    background:
+      /* 深海夜纱罩：顶部深空微透，下部近纯墨 */
+      linear-gradient(
+        180deg,
+        rgb(8 15 39 / 0.45) 0%,
+        rgb(8 15 39 / 0.7) 38%,
+        rgb(8 15 39 / 0.88) 72%,
+        rgb(6 11 29 / 0.94) 100%
+      ),
+      /* 夜宫冷月光池（轻） */
+      radial-gradient(
+        46rem 26rem at 50% -12%,
+        rgb(155 176 225 / 0.1) 0%,
+        transparent 64%
+      ),
+      /* 宫殿背景：插件 maid-atelier palace（深海夜） */
+      url('/skins/maid-atelier/palace-dark.webp') center / cover no-repeat;
   }
 
   h1,
@@ -598,9 +587,9 @@
     border-radius: inherit;
     pointer-events: none;
     background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 60 60'%3E%3Cpath d='M6 54C6 32 16 18 32 16c11-1.4 19 4 17.4 12.4C48 35 41 37.6 37 33.6c-3.2-3.2-.6-8.6 4.4-7.4' fill='none' stroke='%23C8B898' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='53.5' cy='25.5' r='1.5' fill='%23C8B898' opacity='0.4'/%3E%3C/svg%3E")
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 60 60'%3E%3Cpath d='M6 54C6 32 16 18 32 16c11-1.4 19 4 17.4 12.4C48 35 41 37.6 37 33.6c-3.2-3.2-.6-8.6 4.4-7.4' fill='none' stroke='%23C5A468' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='53.5' cy='25.5' r='1.5' fill='%23C5A468' opacity='0.4'/%3E%3C/svg%3E")
         no-repeat top left / 52px 52px,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 60 60'%3E%3Cg transform='rotate(180 30 30)'%3E%3Cpath d='M6 54C6 32 16 18 32 16c11-1.4 19 4 17.4 12.4C48 35 41 37.6 37 33.6c-3.2-3.2-.6-8.6 4.4-7.4' fill='none' stroke='%23C8B898' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='53.5' cy='25.5' r='1.5' fill='%23C8B898' opacity='0.4'/%3E%3C/g%3E%3C/svg%3E")
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 60 60'%3E%3Cg transform='rotate(180 30 30)'%3E%3Cpath d='M6 54C6 32 16 18 32 16c11-1.4 19 4 17.4 12.4C48 35 41 37.6 37 33.6c-3.2-3.2-.6-8.6 4.4-7.4' fill='none' stroke='%23C5A468' stroke-width='1.3' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='53.5' cy='25.5' r='1.5' fill='%23C5A468' opacity='0.4'/%3E%3C/g%3E%3C/svg%3E")
         no-repeat bottom right / 52px 52px;
   }
 
@@ -616,13 +605,40 @@
     -webkit-backdrop-filter: none;
   }
 
-  /* 侧边栏：深海藏蓝纵向渐变（换皮不改结构） */
-  .dark .ff-card {
+  /* 侧边栏：深藏青竖栏 + 鎏金花边（插件 sidebar-fill，双主题恒定深底）。
+     通过令牌作用域让栏内组件自动切换为浅色文字，换皮不改结构。 */
+  .ff-card {
+    --bg: #0b1941;
+    --bg-soft: #14224e;
+    --surface: rgb(16 32 77 / 0.66);
+    --surface-glass: rgb(11 25 66 / 0.88);
+    --surface-hover: rgb(28 50 107 / 0.62);
+    --border: rgb(151 169 216 / 0.22);
+    --border-strong: rgb(197 164 104 / 0.64);
+    --text: #e5eaf6;
+    --text-muted: #bdc9e3;
+    --text-subtle: #96a6c9;
+    --text-inverse: #10204d;
+    --brand: #9bb0e1;
+    --brand-hover: #a3b7e5;
+    --brand-soft: rgb(155 176 225 / 0.18);
+    --brand-ring: rgb(163 183 229 / 0.3);
+    --brand-contrast: #10204d;
+    --gold: #d3b477;
+    --gold-hover: #e5cb94;
+    --gold-soft: rgb(211 180 119 / 0.15);
+    --gold-ring: rgb(211 180 119 / 0.35);
     background: linear-gradient(
       180deg,
-      rgb(24 40 72 / 0.62),
-      rgb(15 32 64 / 0.44)
+      rgb(16 32 77 / 0.92),
+      rgb(9 19 51 / 0.92)
     );
+    border-color: rgb(197 164 104 / 0.5);
+  }
+
+  /* 深底上卷草角花微提亮 */
+  .ff-card::before {
+    filter: brightness(1.28);
   }
 
   .card-hover:hover {
@@ -818,6 +834,57 @@
   /* 金边荷包：segment 边框，金色外晕 */
   .gold-glow {
     box-shadow: var(--shadow-gold);
+  }
+
+  /* ══ 女仆工坊专属装饰（插件 maid-atelier 语言） ══ */
+
+  /* 蕾丝花边：金线扇贝 + 珍珠点，贴元素上/下边。
+     宿主需 position: relative。 */
+  .maid-lace {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 9px;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        circle at 50% 0,
+        transparent 5px,
+        color-mix(in oklab, var(--gold) 62%, transparent) 5.6px,
+        transparent 6.6px
+      )
+        0 0 / 16px 9px repeat-x,
+      radial-gradient(
+        circle,
+        color-mix(in oklab, var(--gold) 78%, transparent) 1px,
+        transparent 1.7px
+      )
+        8px 6.5px / 16px 9px repeat-x;
+  }
+  .maid-lace-top {
+    inset-block-start: 0;
+  }
+  .maid-lace-bottom {
+    inset-block-end: 0;
+    rotate: 180deg;
+  }
+
+  /* 鎏金顶饰条：面板顶部复古金线（中央渐变带 + 珍珠串） */
+  .maid-trim {
+    block-size: 5px;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        circle,
+        color-mix(in oklab, var(--gold) 85%, transparent) 1.1px,
+        transparent 1.9px
+      )
+        50% 50% / 14px 5px repeat-x,
+      linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in oklab, var(--gold) 50%, transparent),
+        transparent
+      );
   }
 }
 
