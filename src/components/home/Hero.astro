@@ -101,22 +101,7 @@ const greeting = t(greetingKey());
       <circle cx="300" cy="14" r="3" fill="var(--gold)" opacity="0.85"></circle>
     </svg>
 
-    {/* 鲸鱼娘双立绘：插件 maid-atelier 原素材，落座底角 */}
-    <img
-      class="maid maid-l"
-      src="/skins/maid-atelier/maid-left.webp"
-      alt=""
-      loading="lazy"
-      decoding="async"
-    />
-    <img
-      class="maid maid-r"
-      src="/skins/maid-atelier/maid-right.webp"
-      alt=""
-      loading="lazy"
-      decoding="async"
-    />
-  </div>
+    </div>
 
   <div class="hero-inner">
     <div class="hero-copy">
@@ -151,11 +136,6 @@ const greeting = t(greetingKey());
       </div>
     </div>
   </div>
-
-  <a class="scroll-hint" href="#main-content" aria-label={t('home.scrollHint')}>
-    <span>{t('home.scrollHint')}</span>
-    <Icon name="arrow-down" size={16} />
-  </a>
 </section>
 
 <div class="ribbon-divider" aria-hidden="true">
@@ -172,7 +152,7 @@ const greeting = t(greetingKey());
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    min-block-size: clamp(30rem, 82vh, 46rem);
+    min-block-size: clamp(24rem, 70vh, 36rem);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -259,32 +239,6 @@ const greeting = t(greetingKey());
   .filigree-top    { inset-block-start: 6px; }
   .filigree-bottom { inset-block-end: 6px; }
 
-  /* 鲸鱼娘双立绘：插件 maid-atelier 落位策略——
-     贴 Hero 底角、以高度百分比缩放，暗色下降亮去饱和 */
-  .maid {
-    position: absolute;
-    bottom: 0;
-    z-index: 0;
-    inline-size: auto;
-    max-width: none;
-    block-size: 96%;
-    object-fit: contain;
-    object-position: center bottom;
-    pointer-events: none;
-    filter: drop-shadow(0 20px 24px rgb(27 44 91 / 0.16));
-  }
-  .maid-l { left: clamp(4px, 2.5%, 36px); }
-  .maid-r { right: clamp(4px, 2.5%, 36px); block-size: 90%; }
-  :global(.dark) .maid {
-    filter:
-      brightness(0.84)
-      saturate(0.92)
-      drop-shadow(0 22px 28px rgb(0 0 0 / 0.3));
-  }
-  @media (max-width: 1024px) {
-    .maid { display: none; }
-  }
-
   /* ── 内容 ─────────────────────────────── */
   .hero-inner {
     inline-size: 100%;
@@ -293,10 +247,12 @@ const greeting = t(greetingKey());
     padding-inline: clamp(1rem, 4vw, 2.2rem);
     position: relative;
     z-index: 1;
+    text-align: center;
   }
 
   .hero-copy {
-    max-inline-size: 38rem;
+    max-inline-size: 42rem;
+    margin-inline: auto;
     text-shadow: 0 2px 8px rgb(8 18 46 / 0.4);
   }
 
@@ -304,7 +260,7 @@ const greeting = t(greetingKey());
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    margin: 0 0 0.7rem;
+    margin: 0 0 0.85rem;
     padding: 0.3rem 0.85rem 0.3rem 0.7rem;
     font-size: 0.86rem;
     font-weight: 580;
@@ -314,6 +270,7 @@ const greeting = t(greetingKey());
     border-radius: var(--r-full);
     letter-spacing: 0.02em;
     backdrop-filter: blur(8px);
+    justify-content: center;
   }
   .greet-dot {
     inline-size: 7px;
@@ -356,11 +313,14 @@ const greeting = t(greetingKey());
   .hero-tagline {
     display: flex;
     align-items: center;
+    justify-content: center;
     margin: 0.85rem 0 0;
     min-block-size: 1.9rem;
     font-size: clamp(1.05rem, 2.4vw, 1.3rem);
     font-weight: 540;
-    color: color-mix(in oklab, var(--bg) 92%, white);
+    /* hero 段背景恒深（.hero-bg 是固定深蓝渐变，不跟随主题），
+       字色也必须主题无关：偏金米白以呼应鎏金调 */
+    color: #e9dfc8;
     font-style: italic;
   }
   .type-caret {
@@ -380,10 +340,11 @@ const greeting = t(greetingKey());
 
   .hero-bio {
     max-width: 36rem;
-    margin: 0.9rem 0 0;
+    margin: 0.9rem auto 0;
     font-size: 0.96rem;
     line-height: 1.85;
-    color: color-mix(in oklab, var(--bg) 88%, white);
+    /* hero 段背景恒深，字色恒亮：偏冷的瓷白以与金米 tagline 形成层次 */
+    color: #c9d3e8;
   }
 
   .hero-actions {
@@ -391,6 +352,7 @@ const greeting = t(greetingKey());
     flex-wrap: wrap;
     gap: 0.65rem;
     margin-block-start: 1.7rem;
+    justify-content: center;
   }
 
   /* Hero 内的幽灵按钮：深海图上用浅色描边/文字 */
@@ -408,58 +370,18 @@ const greeting = t(greetingKey());
     box-shadow: 0 8px 22px -10px var(--gold-ring);
   }
 
-  /* ── 滚动提示 ─────────────────────────── */
-  .scroll-hint {
-    position: absolute;
-    inset-block-end: 1.6rem;
-    inset-inline: 50%;
-    translate: -50% 0;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.2rem;
-    font-size: 0.74rem;
-    color: color-mix(in oklab, var(--gold) 70%, transparent);
-    letter-spacing: 0.06em;
-    animation: bob 2.2s var(--ease-soft) infinite;
-    transition: color var(--dur) var(--ease-soft);
-  }
-  .scroll-hint:hover {
-    color: var(--gold);
-  }
-  @keyframes bob {
-    50% {
-      transform: translateY(5px);
-    }
-  }
-
   /* ── 响应式 ───────────────────────────── */
   @media (max-width: 900px) {
     .hero {
-      min-block-size: clamp(28rem, 86vh, 40rem);
-      padding-block: calc(var(--header-h) + 2rem) 3.4rem;
+      min-block-size: clamp(24rem, 78vh, 32rem);
+      padding-block: calc(var(--header-h) + 1.8rem) 3rem;
     }
     .col { inline-size: 50px; opacity: 0.65; }
     .glow-1 { inline-size: 18rem; block-size: 18rem; }
     .glow-2 { inline-size: 20rem; block-size: 20rem; }
-    .hero-inner {
-      text-align: center;
-    }
-    .hero-copy {
-      margin-inline: auto;
-    }
-    .hero-greeting,
-    .hero-tagline,
-    .hero-actions {
-      justify-content: center;
-    }
-    .hero-bio {
-      margin-inline: auto;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .scroll-hint,
     .greet-dot,
     .type-caret {
       animation: none !important;

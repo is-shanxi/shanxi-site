@@ -77,12 +77,12 @@ export const AUTHOR = {
   /** 一句话身份 */
   role: '软件工程 · 后端开发',
   location: '中国 · 江西',
-  /** 首页 Banner 打字机轮播的标语 */
+  /** 首页 Banner 打字机轮播的标语（英文一一对应原中文四句） */
   taglines: [
-    '用代码看世界',
-    '把复杂留给系统，把简单留给用户',
-    '与 AI 并肩开拓',
-    '慢慢来，比较快',
+    'See the world through code.',
+    'Leave the complex to the system, the simple to the user.',
+    'Building, side by side with AI.',
+    'Slow is steady, steady is fast.',
   ],
   bio: '喜欢把想法拆成一行行可以运行的逻辑。日常在 Go 与 Java 之间来回，也会为了一个动画曲线调上半小时。',
 } as const;
