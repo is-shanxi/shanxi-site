@@ -1,0 +1,426 @@
+---
+/**
+ * 首页 Hero —— 古典洛丽塔主视觉（grill-me 第 6 轮定）。
+ *
+ * 视觉层次（全部用 SVG 与 CSS 实现，零外图依赖）：
+ *   1. 深海军渐变背 + 顶/底三层径向光斑，模拟水晶吊灯氛围
+ *   2. 左/右两列金色卷草幕布（inline SVG，~1.4KB）
+ *   3. 顶部装饰：丝带蝴蝶结 + 卷草弯月
+ *   4. 文案：问候 + Playfair Display 衬线大标题 + 打字机标语 + CTA
+ *
+ * Header 自带毛玻璃，自然浮于 Hero 之上；
+ * 用 padding 把内容推到 Header 下方。
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { AUTHOR, SITE } from '@/config';
+import { useTranslations } from '@/i18n';
+import { greetingKey } from '@/lib/utils';
+
+const t = useTranslations();
+const greeting = t(greetingKey());
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true">
+    {/* 三层金色吊灯光斑 */}
+    <span class="glow glow-1"></span>
+    <span class="glow glow-2"></span>
+    <span class="glow glow-3"></span>
+
+    {/* 左/右两列金色卷草幕布柱 */}
+    <svg class="col col-l" viewBox="0 0 80 800" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="hGoldL" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="var(--gold-hover)" stop-opacity="0.9"></stop>
+          <stop offset="100%" stop-color="var(--gold)" stop-opacity="0.2"></stop>
+        </linearGradient>
+      </defs>
+      <rect width="2" height="800" x="20" fill="url(#hGoldL)"></rect>
+      <g fill="var(--gold)" opacity="0.78">
+        <circle cx="21" cy="40" r="4"></circle>
+        <circle cx="21" cy="120" r="3"></circle>
+        <circle cx="21" cy="200" r="4"></circle>
+        <circle cx="21" cy="280" r="3"></circle>
+        <circle cx="21" cy="380" r="5"></circle>
+        <circle cx="21" cy="500" r="3"></circle>
+        <circle cx="21" cy="600" r="4"></circle>
+        <circle cx="21" cy="700" r="3"></circle>
+        <path d="M14 30 q7 4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M28 110 q7 -4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M14 270 q7 4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M28 410 q7 -4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M14 590 q7 4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+      </g>
+    </svg>
+    <svg class="col col-r" viewBox="0 0 80 800" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="hGoldR" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0%" stop-color="var(--gold-hover)" stop-opacity="0.9"></stop>
+          <stop offset="100%" stop-color="var(--gold)" stop-opacity="0.2"></stop>
+        </linearGradient>
+      </defs>
+      <rect width="2" height="800" x="58" fill="url(#hGoldR)"></rect>
+      <g fill="var(--gold)" opacity="0.78">
+        <circle cx="59" cy="40" r="4"></circle>
+        <circle cx="59" cy="120" r="3"></circle>
+        <circle cx="59" cy="200" r="4"></circle>
+        <circle cx="59" cy="280" r="3"></circle>
+        <circle cx="59" cy="380" r="5"></circle>
+        <circle cx="59" cy="500" r="3"></circle>
+        <circle cx="59" cy="600" r="4"></circle>
+        <circle cx="59" cy="700" r="3"></circle>
+        <path d="M66 30 q7 4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M52 110 q7 -4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M66 270 q7 4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M52 410 q7 -4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+        <path d="M66 590 q7 4 14 0 q-7 6 -14 0 z" opacity="0.6"></path>
+      </g>
+    </svg>
+
+    {/* 顶部细纹饰：金色卷草 */}
+    <svg class="filigree filigree-top" viewBox="0 0 600 28" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d="M0 14 Q150 0 300 14 T600 14 M0 14 Q150 28 300 14 T600 14"
+        fill="none"
+        stroke="var(--gold)"
+        stroke-width="1"
+        opacity="0.6"></path>
+      <circle cx="300" cy="14" r="3" fill="var(--gold)" opacity="0.85"></circle>
+      <circle cx="120" cy="14" r="1.5" fill="var(--gold)" opacity="0.7"></circle>
+      <circle cx="480" cy="14" r="1.5" fill="var(--gold)" opacity="0.7"></circle>
+    </svg>
+
+    {/* 底部细纹饰：金色卷草 */}
+    <svg class="filigree filigree-bottom" viewBox="0 0 600 28" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d="M0 14 Q150 0 300 14 T600 14 M0 14 Q150 28 300 14 T600 14"
+        fill="none"
+        stroke="var(--gold)"
+        stroke-width="1"
+        opacity="0.6"></path>
+      <circle cx="300" cy="14" r="3" fill="var(--gold)" opacity="0.85"></circle>
+    </svg>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="hero-greeting">
+        <span class="greet-dot" aria-hidden="true"></span>
+        {greeting}，欢迎来到
+      </p>
+
+      <h1 id="hero-title" class="hero-title">
+        {SITE.title}
+        <span class="hero-handle">@{AUTHOR.handle}</span>
+      </h1>
+
+      <p class="hero-tagline">
+        <span
+          class="type-text"
+          data-typewriter={JSON.stringify(AUTHOR.taglines)}>{AUTHOR.taglines[0]}</span
+        ><span class="type-caret" aria-hidden="true"></span>
+      </p>
+
+      <p class="hero-bio">{SITE.description}</p>
+
+      <div class="hero-actions">
+        <a class="btn btn-coral" href="/blog">
+          <Icon name="book" size={16} />
+          读读文章
+        </a>
+        <a class="btn btn-hero-ghost" href="/about">
+          <Icon name="user" size={16} />
+          认识我
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <a class="scroll-hint" href="#main-content" aria-label={t('home.scrollHint')}>
+    <span>{t('home.scrollHint')}</span>
+    <Icon name="arrow-down" size={16} />
+  </a>
+</section>
+
+<div class="ribbon-divider" aria-hidden="true">
+  <svg viewBox="0 0 32 16" width="44" height="22" fill="none">
+    <path
+      d="M2 8 L8 4 L8 12 Z M30 8 L24 4 L24 12 Z M10 6 Q16 2 22 6 Q16 10 22 14 Q10 14 10 6 Z"
+      fill="var(--gold)"></path>
+    <circle cx="16" cy="8" r="1.4" fill="var(--bg)"></circle>
+  </svg>
+</div>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-block-size: clamp(30rem, 82vh, 46rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: calc(var(--header-h) + clamp(2.5rem, 7vh, 4.5rem)) clamp(4rem, 9vh, 6rem);
+    border-block-end: 1px solid var(--border-strong);
+  }
+
+  /* ── 背景层：纯 SVG+CSS ─────────── */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      linear-gradient(
+        170deg,
+        #06122e 0%,
+        #0e1b40 30%,
+        #15224a 60%,
+        #0e1b40 100%
+      );
+  }
+
+  /* 三层金色吊灯光斑 */
+  .hero-bg .glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(60px);
+  }
+  .glow-1 {
+    inset-block-start: -10%;
+    inset-inline-start: -8%;
+    inline-size: 28rem;
+    block-size: 28rem;
+    background: radial-gradient(
+      circle at 50% 50%,
+      color-mix(in oklab, var(--gold) 56%, transparent) 0%,
+      transparent 65%
+    );
+  }
+  .glow-2 {
+    inset-block-start: -10%;
+    inset-inline-end: -8%;
+    inline-size: 30rem;
+    block-size: 30rem;
+    background: radial-gradient(
+      circle at 50% 50%,
+      color-mix(in oklab, var(--gold) 50%, transparent) 0%,
+      transparent 65%
+    );
+  }
+  .glow-3 {
+    inset-block-end: -25%;
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    inline-size: 36rem;
+    block-size: 22rem;
+    background: radial-gradient(
+      circle at 50% 50%,
+      color-mix(in oklab, var(--brand) 36%, transparent) 0%,
+      transparent 70%
+    );
+  }
+
+  /* 左右两列金色幕布柱 */
+  .col {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 80px;
+    block-size: 100%;
+    pointer-events: none;
+  }
+  .col-l { inset-inline-start: 0; opacity: 0.85; }
+  .col-r { inset-inline-end: 0;  opacity: 0.85; }
+
+  /* 顶部/底部细纹饰 */
+  .filigree {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 28px;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .filigree-top    { inset-block-start: 6px; }
+  .filigree-bottom { inset-block-end: 6px; }
+
+  /* ── 内容 ─────────────────────────────── */
+  .hero-inner {
+    inline-size: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2.2rem);
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-copy {
+    max-inline-size: 38rem;
+    text-shadow: 0 2px 8px rgb(8 18 46 / 0.4);
+  }
+
+  .hero-greeting {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.7rem;
+    padding: 0.3rem 0.85rem 0.3rem 0.7rem;
+    font-size: 0.86rem;
+    font-weight: 580;
+    color: #f0dfa3;
+    background: color-mix(in oklab, var(--gold-soft) 18%, transparent);
+    border: 1px solid color-mix(in oklab, var(--gold) 42%, transparent);
+    border-radius: var(--r-full);
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(8px);
+  }
+  .greet-dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--gold) 28%, transparent);
+    animation: pulse-dot 2.4s var(--ease-soft) infinite;
+  }
+  @keyframes pulse-dot {
+    50% {
+      box-shadow: 0 0 0 7px color-mix(in oklab, var(--gold) 10%, transparent);
+    }
+  }
+
+  .hero-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2.4rem, 6.4vw, 4rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.005em;
+    color: #fbf3e0;
+    background: linear-gradient(180deg, #fff8dc 0%, #f0dfa3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-handle {
+    display: inline-block;
+    margin-inline-start: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--gold) 80%, transparent);
+    -webkit-text-fill-color: color-mix(in oklab, var(--gold) 80%, transparent);
+    vertical-align: middle;
+  }
+
+  .hero-tagline {
+    display: flex;
+    align-items: center;
+    margin: 0.85rem 0 0;
+    min-block-size: 1.9rem;
+    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    font-weight: 540;
+    color: color-mix(in oklab, var(--bg) 92%, white);
+    font-style: italic;
+  }
+  .type-caret {
+    display: inline-block;
+    inline-size: 2px;
+    block-size: 1.15em;
+    margin-inline-start: 3px;
+    background: var(--gold);
+    box-shadow: 0 0 6px color-mix(in oklab, var(--gold) 50%, transparent);
+    animation: blink 1.05s steps(2, start) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .hero-bio {
+    max-width: 36rem;
+    margin: 0.9rem 0 0;
+    font-size: 0.96rem;
+    line-height: 1.85;
+    color: color-mix(in oklab, var(--bg) 88%, white);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-block-start: 1.7rem;
+  }
+
+  /* Hero 内的幽灵按钮：深海图上用浅色描边/文字 */
+  .btn-hero-ghost {
+    background: color-mix(in oklab, white 8%, transparent);
+    color: #fbf3e0;
+    border: 1px solid color-mix(in oklab, var(--gold) 60%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .btn-hero-ghost:hover {
+    border-color: var(--gold);
+    color: #fff8dc;
+    background: color-mix(in oklab, var(--gold-soft) 18%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px -10px var(--gold-ring);
+  }
+
+  /* ── 滚动提示 ─────────────────────────── */
+  .scroll-hint {
+    position: absolute;
+    inset-block-end: 1.6rem;
+    inset-inline: 50%;
+    translate: -50% 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.74rem;
+    color: color-mix(in oklab, var(--gold) 70%, transparent);
+    letter-spacing: 0.06em;
+    animation: bob 2.2s var(--ease-soft) infinite;
+    transition: color var(--dur) var(--ease-soft);
+  }
+  .scroll-hint:hover {
+    color: var(--gold);
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(5px);
+    }
+  }
+
+  /* ── 响应式 ───────────────────────────── */
+  @media (max-width: 900px) {
+    .hero {
+      min-block-size: clamp(28rem, 86vh, 40rem);
+      padding-block: calc(var(--header-h) + 2rem) 3.4rem;
+    }
+    .col { inline-size: 50px; opacity: 0.65; }
+    .glow-1 { inline-size: 18rem; block-size: 18rem; }
+    .glow-2 { inline-size: 20rem; block-size: 20rem; }
+    .hero-inner {
+      text-align: center;
+    }
+    .hero-copy {
+      margin-inline: auto;
+    }
+    .hero-greeting,
+    .hero-tagline,
+    .hero-actions {
+      justify-content: center;
+    }
+    .hero-bio {
+      margin-inline: auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-hint,
+    .greet-dot,
+    .type-caret {
+      animation: none !important;
+    }
+  }
+</style>
