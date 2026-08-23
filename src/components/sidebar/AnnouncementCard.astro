@@ -56,7 +56,10 @@ const text = body || t('sidebar.announcementText');
     margin: 0;
     font-size: 0.88rem;
     line-height: 1.7;
-    color: var(--text);
+    /* 用便签专属字色而非 --text：在 .ff-card 作用域里 --text 会被
+       覆写成月白，浅字配浅便签底完全看不清。--note-ink 跟随便签底
+       色明暗翻转，任何上下文都清晰 */
+    color: var(--note-ink);
     word-break: break-word;
   }
 </style>

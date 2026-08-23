@@ -135,7 +135,11 @@ const Tag = href ? 'a' : 'div';
       transform var(--dur-slow) var(--ease-spring),
       box-shadow var(--dur) var(--ease-soft),
       filter var(--dur) var(--ease-soft);
-    color: var(--text);
+    /* 便签字色用专属 --note-ink 而非 --text：
+       在 .ff-card（深藏青侧栏）作用域里 --text 被覆写成月白，
+       但 light 主题下便签底仍是浅色 → 浅字配浅底看不清。
+       --note-ink 跟随便签底色明暗翻转，任何作用域都清晰 */
+    color: var(--note-ink);
     text-decoration: none;
   }
 

@@ -78,7 +78,9 @@ const plain = (s: string) =>
     margin: 0;
     font-size: 0.84rem;
     line-height: 1.55;
-    color: var(--text);
+    /* 见 .ann-text 同理：便签内文用 --note-ink，避免 .ff-card 把 --text
+       覆写成月白后浅字配浅便签底看不清 */
+    color: var(--note-ink);
     display: -webkit-box;
     -webkit-box-orient: vertical;
     /* 侧栏高度限制解除后，给碎碎念更多展示行数，减少信息损失 */

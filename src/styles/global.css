@@ -60,6 +60,10 @@
   --note-lilac-br: #b6a9d2;
   --note-sage-bg: #d9e9d9;
   --note-sage-br: #a8c8ad;
+  /* 便签字色：跟随便签底色明暗翻转（浅底配深字）。
+     独立于 --text，避免被 .ff-card 等作用域把 --text 覆写成月白
+     后浅字落在浅便签上看不清 */
+  --note-ink: #172347;
 
   /* ── 状态 ── */
   --success: #5fa882;
@@ -163,6 +167,7 @@
   --note-lilac-br: #423a64;
   --note-sage-bg: #1e2e26;
   --note-sage-br: #324a3c;
+  --note-ink: #e5eaf6;
 
   /* ── 阴影：插件 maid-shadow（深海夜） ── */
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
@@ -635,6 +640,12 @@
     );
     border-color: rgb(197 164 104 / 0.5);
   }
+
+  /* 便签字色在 ff-card 内的可见性问题已改由专属令牌 --note-ink 解决
+     （见 :root/.dark 的便签调色板与 Sticky.astro 的 color 声明）。
+     此处不再用选择器叠特异性压制：global.css 的规则在 @layer components
+     内，而组件 scoped CSS 是 unlayered——层叠层级永远优先于特异性，
+     提高特异性也赢不了 unlayered 规则。 */
 
   /* 深底上卷草角花微提亮 */
   .ff-card::before {
