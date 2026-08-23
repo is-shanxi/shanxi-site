@@ -1,0 +1,29 @@
+{
+  "name": "shanxi-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "山兮的个人站点 — 古典型洛丽塔 · 海军蓝 × 旧金",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node ./scripts/build.mjs",
+    "postbuild": "pagefind --site dist",
+    "preview": "astro preview",
+    "check": "astro check",
+    "sync": "astro sync"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^7.0.5",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/quicksand": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.2.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "pagefind": "^1.5.2",
+    "typescript": "^5.7.3"
+  }
+}

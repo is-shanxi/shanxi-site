@@ -1,0 +1,18 @@
+# Astro / Node
+node_modules/
+dist/
+.astro/
+.output/
+# WorkBuddy 内部数据
+.workbuddy/
+# 构建/验证产物
+outputs/
+# 设计稿与验证截图（非源码，体积大）
+*.png
+screenshots/
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+# 环境变量
+.env
+.env.*
