@@ -104,14 +104,15 @@ const ogImage = new URL(image, Astro.site ?? SITE.url).href;
       (() => {
         try {
           const stored = localStorage.getItem('shanxi-theme');
-          /* 默认深海藏蓝工坊（dark）；仅当用户显式选择 light 时用昼间奶白 */
-          const dark = stored !== 'light';
+          /* 默认日光水晶大厅（light，maid-atelier 插件标准）；
+             仅当用户显式选择 dark 时切深海夜色 */
+          const dark = stored === 'dark';
           document.documentElement.classList.toggle('dark', dark);
           document.documentElement.dataset.theme = stored || 'auto';
           if (dark) {
             document
               .querySelector('meta[name="theme-color"]')
-              ?.setAttribute('content', '#0F2040');
+              ?.setAttribute('content', '#080F27');
           }
         } catch (_) {}
       })();

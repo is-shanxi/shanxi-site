@@ -2,7 +2,8 @@
  * 主题切换。
  *
  * 三态模型：light / dark / auto。
- * 默认（auto）= 深海藏蓝工坊（dark）；仅显式选择 light 时进入昼间奶白。
+ * 默认（auto）= 日光水晶大厅（light，maid-atelier 插件标准）；
+ * 显式选择 dark 时进入深海夜色。
  * 真正的"当前是亮还是暗"由 <html class="dark"> 决定，
  * 用户的显式选择存 localStorage，优先级高于一切。
  */
@@ -21,10 +22,10 @@ export function getStoredTheme(): ThemeMode {
   }
 }
 
-/** 给定模式解析出实际生效的明暗；auto 默认深海藏蓝工坊（dark） */
+/** 给定模式解析出实际生效的明暗；auto 默认日光水晶大厅（light） */
 export function resolveTheme(mode: ThemeMode): 'light' | 'dark' {
   if (mode !== 'auto') return mode;
-  return 'dark';
+  return 'light';
 }
 
 /** 应用到 DOM：切 class + 同步 theme-color，供移动端浏览器 UI 着色 */
@@ -39,7 +40,7 @@ export function applyTheme(mode: ThemeMode): 'light' | 'dark' {
     'meta[name="theme-color"]',
   );
   if (meta) {
-    meta.content = resolved === 'dark' ? '#0F2040' : '#F8F5F0';
+    meta.content = resolved === 'dark' ? '#080F27' : '#DCE6F5';
   }
 
   return resolved;
@@ -66,7 +67,7 @@ export function toggleTheme() {
   setTheme(current === 'dark' ? 'light' : 'dark');
 }
 
-/** 初始化：应用当前主题（auto 已固定解析为 dark，无需系统监听） */
+/** 初始化：应用当前主题（auto 已固定解析为 light，无需系统监听） */
 export function initTheme() {
   applyTheme(getStoredTheme());
 }
