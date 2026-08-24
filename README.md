@@ -1,16 +1,8 @@
-# 山兮的小屋 · shanxi-site
+#  shanxi-site
 
-> 一个后端方向软件工程学生的自留地 —— 记录代码、生活与那些微小而确定的快乐。
+> 一个个人作品集网站，支持移动端和pc端
 
-纯静态个人站点，Astro 从零搭建，零后端、零动画库。古典洛丽塔视觉风格，海军蓝与鎏金双主题，把「代码、生活、二次元」装进同一栋房子。
-
-**线上地址**: [shanxi.dev](https://shanxi.dev)
-
-<p align="center">
-  <img src="./assets/screenshot-home-light.png" alt="浅色主题首页整体布局" width="92%" />
-  <br />
-  <em>浅色主题（日光水晶大厅）下的首页，包含 Hero、最新文章、精选作品、碎碎念便签与技能树。</em>
-</p>
+纯静态个人站点，基于Astro框架从零搭建，零后端、零动画库。
 
 ---
 
@@ -37,58 +29,19 @@
 - **单一配置源**：站点身份、导航、社交链接、功能开关集中在 `src/config.ts`，改一个文件即改全站
 - **内容集合建模**：Blog / Projects / Notes 三类内容各自独立 schema，Zod 构建期校验，字段写错直接构建失败
 - **内容查询层**：`src/lib/content.ts` 统一封装草稿过滤、排序规则、派生字段，页面组件不直接调用 `getCollection`
-- **i18n 预留架构**：所有界面文案走 `src/i18n/` 字典，组件内不写死中文；当前只注册 zh-CN，增加语言只需新建字典文件
+- **i18n 预留架构**：目前所有页面文案走 `src/i18n/` 字典，当前只注册了中文，想扩展其他语言只需要新建字典文件
 
-### 视觉与交互
-
-- **双主题**：日光水晶大厅（light） / 深海夜色（dark），`.dark` 类策略 + 阻塞式预置脚本，杜绝主题闪烁
-
-<p align="center">
-  <img src="./assets/screenshot-home-dark.png" alt="深色主题首页" width="92%" />
-  <br />
-  <em>深色主题（深海夜色）下的首页 Hero，鎏金卷草与水晶吊灯氛围在暗色背景下更突出。</em>
-</p>
-
-- **零动画库**：滚动揭示、阅读进度条、视差全部用 CSS scroll-driven animations 原生实现，IntersectionObserver 仅作不支持时的兜底
-- **View Transitions**：页面切换用浏览器原生 API，淡入上移动画
-- **打字机标语**：首页 Hero 标语轮播，纯 JS 实现，尊重 `prefers-reduced-motion`
-- **气泡氛围粒子**：纯 CSS 气泡上浮效果，无性能负担
-- **代码块一键复制**：渐进增强注入，hover 显示
-- **目录高亮**：文章页 TOC 随滚动自动高亮当前章节
-- **交互月历**：侧边栏日历组件，有文章的日期可点击跳转归档
 
 ### 布局
 
-- **双侧边栏**：桌面端三栏布局（左栏 250px / 主内容 / 右栏 264px）
+- **双侧边栏**：桌面端三栏布局
   - 左栏：站长名片 / 公告 / 分类 / 标签
-  - 右栏：运行状态 / 站点信息 / 交互月历 / 最近碎碎念
+  - 右栏：运行状态 / 站点信息 / 交互月历 / 日志
+    <img width="545" height="1159" alt="image" src="https://github.com/user-attachments/assets/df0c7d36-0036-4c9f-b29f-5f6f01ca8fec" />
+<img width="480" height="1053" alt="image" src="https://github.com/user-attachments/assets/650184e5-2799-486e-8bd9-1c1cf2d0aac3" />
 
-<table align="center" width="96%">
-  <tr>
-    <td width="50%" align="center">
-      <img src="./assets/screenshot-side-left.png" alt="左侧边栏" width="100%" />
-      <br />
-      <sub>左侧边栏：站长名片、公告、分类与标签云</sub>
-    </td>
-    <td width="50%" align="center">
-      <img src="./assets/screenshot-side-right.png" alt="右侧边栏" width="100%" />
-      <br />
-      <sub>右侧边栏：运行状态、站点信息、交互月历</sub>
-    </td>
-  </tr>
-</table>
 
-- **响应式断点**：≥1100px 三栏 → 860–1099px 两栏（右栏收起） → <860px 单栏（侧栏隐藏，走抽屉 + 底部标签栏）
-- **移动端底部标签栏**：5 个核心导航入口
-- **无障碍**：skip-link、ARIA 标签、`prefers-reduced-motion` 全量尊重
-
-<p align="center">
-  <img src="./assets/screenshot-home-mobile.png" alt="移动端首页" width="40%" />
-  <br />
-  <em>移动端单栏布局：Hero 全屏展示，底部标签栏提供 5 个核心入口，顶部抽屉收纳完整导航。</em>
-</p>
-
-### 内容
+### 内容展示
 
 - **博客**：长文，支持分类、标签、置顶、草稿、封面图、阅读时长估算、相关文章推荐（标签交集打分）
 
@@ -98,32 +51,14 @@
   <em>博客文章详情页：顶部元信息、右侧目录高亮、底部上一篇 / 下一篇与相关文章推荐。</em>
 </p>
 
-- **作品集**：项目卡片，技术栈标签、状态标记、精选、手动排序、便签色板主视觉
-- **日志（碎碎念）**：短内容动态流，便签墙渲染，心情 emoji、便签颜色由内容哈希稳定派生
-
-<p align="center">
-  <img src="./assets/screenshot-notes-card.png" alt="碎碎念便签卡片" width="45%" />
-  <br />
-  <em>右侧边栏的「最近碎碎念」卡片，用洛丽塔互补色系便签展示短内容。</em>
-</p>
 
 - **归档**：按时间线回溯全部文章，支持日期筛选
-- **RSS 订阅**：`/rss.xml`
 - **站内搜索**：Pagefind 构建期索引，`/search` 对话框
 
 <p align="center">
   <img src="./assets/screenshot-search-bow.png" alt="站内搜索对话框" width="92%" />
   <br />
-  <em>全局搜索对话框（快捷键唤起），基于 Pagefind 静态索引，支持模糊匹配与即时高亮。</em>
 </p>
-
-### SEO
-
-- OpenGraph + Twitter Card 元信息
-- Canonical URL
-- Sitemap（自动过滤 404 页面）
-- JSON-LD 结构化数据
-- `theme-color` 跟随主题切换
 
 ---
 
@@ -178,22 +113,6 @@ shanxi-site/
 
 ---
 
-## 设计系统
-
-视觉主题为「鲸鱼娘·深海女仆工坊」，古典洛丽塔风格：
-
-| 主题 | 名称 | 色调 |
-|------|------|------|
-| 浅色 | 日光水晶大厅 | 瓷白 `#f8f6f0` + 长春花蓝 `#526aa8` + 鎏金 `#c5a468` |
-| 深色 | 深海夜色 | 深海军蓝 `#080F27` + 月白 + 鎏金 |
-
-设计令牌全部定义在 `src/styles/global.css` 的 `:root` 与 `.dark` 中，语义化命名（`--brand` / `--gold` / `--surface` / `--shadow` 等），组件内不写死色值。
-
-便签调色板（洛丽塔互补色系）：奶油 / 瓷蓝 / 玫瑰 / 丁香 / 鼠尾草。
-
----
-
-## 快速开始
 
 ### 环境要求
 
@@ -242,7 +161,7 @@ npm run check
 # 新建项目卡片
 # 在 src/content/projects/ 下创建 name.md
 
-# 新建碎碎念
+# 新建日志
 # 在 src/content/notes/ 下创建 YYYY-MM-DD-title.md
 ```
 
@@ -254,13 +173,3 @@ npm run check
 - 文章内容：[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ---
-
-## 作者
-
-**山兮** · 软件工程 · 后端开发
-
-- GitHub: [@is-shanxi](https://github.com/is-shanxi)
-- Email: shanxi413@gmail.com
-- Site: [shanxi.dev](https://shanxi.dev)
-
-> 用代码看世界，视 AI 为并肩开拓的伙伴。
