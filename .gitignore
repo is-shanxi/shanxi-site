@@ -10,6 +10,8 @@ outputs/
 # 设计稿与验证截图（非源码，体积大）
 *.png
 screenshots/
+# README 展示图例外
+!assets/*.png
 # 系统/编辑器
 .DS_Store
 Thumbs.db

@@ -6,6 +6,12 @@
 
 **线上地址**: [shanxi.dev](https://shanxi.dev)
 
+<p align="center">
+  <img src="./assets/screenshot-home-light.png" alt="浅色主题首页整体布局" width="92%" />
+  <br />
+  <em>浅色主题（日光水晶大厅）下的首页，包含 Hero、最新文章、精选作品、碎碎念便签与技能树。</em>
+</p>
+
 ---
 
 ## 技术栈
@@ -36,6 +42,13 @@
 ### 视觉与交互
 
 - **双主题**：日光水晶大厅（light） / 深海夜色（dark），`.dark` 类策略 + 阻塞式预置脚本，杜绝主题闪烁
+
+<p align="center">
+  <img src="./assets/screenshot-home-dark.png" alt="深色主题首页" width="92%" />
+  <br />
+  <em>深色主题（深海夜色）下的首页 Hero，鎏金卷草与水晶吊灯氛围在暗色背景下更突出。</em>
+</p>
+
 - **零动画库**：滚动揭示、阅读进度条、视差全部用 CSS scroll-driven animations 原生实现，IntersectionObserver 仅作不支持时的兜底
 - **View Transitions**：页面切换用浏览器原生 API，淡入上移动画
 - **打字机标语**：首页 Hero 标语轮播，纯 JS 实现，尊重 `prefers-reduced-motion`
@@ -49,18 +62,60 @@
 - **双侧边栏**：桌面端三栏布局（左栏 250px / 主内容 / 右栏 264px）
   - 左栏：站长名片 / 公告 / 分类 / 标签
   - 右栏：运行状态 / 站点信息 / 交互月历 / 最近碎碎念
+
+<table align="center" width="96%">
+  <tr>
+    <td width="50%" align="center">
+      <img src="./assets/screenshot-side-left.png" alt="左侧边栏" width="100%" />
+      <br />
+      <sub>左侧边栏：站长名片、公告、分类与标签云</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="./assets/screenshot-side-right.png" alt="右侧边栏" width="100%" />
+      <br />
+      <sub>右侧边栏：运行状态、站点信息、交互月历</sub>
+    </td>
+  </tr>
+</table>
+
 - **响应式断点**：≥1100px 三栏 → 860–1099px 两栏（右栏收起） → <860px 单栏（侧栏隐藏，走抽屉 + 底部标签栏）
 - **移动端底部标签栏**：5 个核心导航入口
 - **无障碍**：skip-link、ARIA 标签、`prefers-reduced-motion` 全量尊重
 
+<p align="center">
+  <img src="./assets/screenshot-home-mobile.png" alt="移动端首页" width="40%" />
+  <br />
+  <em>移动端单栏布局：Hero 全屏展示，底部标签栏提供 5 个核心入口，顶部抽屉收纳完整导航。</em>
+</p>
+
 ### 内容
 
 - **博客**：长文，支持分类、标签、置顶、草稿、封面图、阅读时长估算、相关文章推荐（标签交集打分）
+
+<p align="center">
+  <img src="./assets/screenshot-blog-dark.png" alt="博客文章页" width="92%" />
+  <br />
+  <em>博客文章详情页：顶部元信息、右侧目录高亮、底部上一篇 / 下一篇与相关文章推荐。</em>
+</p>
+
 - **作品集**：项目卡片，技术栈标签、状态标记、精选、手动排序、便签色板主视觉
 - **日志（碎碎念）**：短内容动态流，便签墙渲染，心情 emoji、便签颜色由内容哈希稳定派生
+
+<p align="center">
+  <img src="./assets/screenshot-notes-card.png" alt="碎碎念便签卡片" width="45%" />
+  <br />
+  <em>右侧边栏的「最近碎碎念」卡片，用洛丽塔互补色系便签展示短内容。</em>
+</p>
+
 - **归档**：按时间线回溯全部文章，支持日期筛选
 - **RSS 订阅**：`/rss.xml`
 - **站内搜索**：Pagefind 构建期索引，`/search` 对话框
+
+<p align="center">
+  <img src="./assets/screenshot-search-bow.png" alt="站内搜索对话框" width="92%" />
+  <br />
+  <em>全局搜索对话框（快捷键唤起），基于 Pagefind 静态索引，支持模糊匹配与即时高亮。</em>
+</p>
 
 ### SEO
 
