@@ -4,6 +4,11 @@
 
 纯静态个人站点，基于Astro框架从零搭建，零后端、零动画库。
 
+<p align="center">
+<img width="1440" height="3260" alt="image" src="https://github.com/user-attachments/assets/0c2474a5-0041-431f-b2a7-934e6eeebe49" />
+   <br />
+</p>
+
 ---
 
 ## 技术栈
@@ -37,9 +42,7 @@
 - **双侧边栏**：桌面端三栏布局
   - 左栏：站长名片 / 公告 / 分类 / 标签
   - 右栏：运行状态 / 站点信息 / 交互月历 / 日志
-    <img width="545" height="1159" alt="image" src="https://github.com/user-attachments/assets/df0c7d36-0036-4c9f-b29f-5f6f01ca8fec" />
-<img width="480" height="1053" alt="image" src="https://github.com/user-attachments/assets/650184e5-2799-486e-8bd9-1c1cf2d0aac3" />
-
+   
 
 ### 内容展示
 
