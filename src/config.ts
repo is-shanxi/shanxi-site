@@ -54,7 +54,7 @@ export type IconName =
 
 export const SITE = {
   /** 站点绝对地址，需与 astro.config.mjs 中的 site 保持一致 */
-  url: 'https://shanxi.dev',
+  url: 'https://mu-shanxi.cn',
   title: '山兮的小屋',
   /** 短标题，用于 Logo 与移动端 */
   shortTitle: '山兮',

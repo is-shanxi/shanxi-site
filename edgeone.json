@@ -1,0 +1,56 @@
+{
+  "$schema": "https://edgeone.ai/document/162316940299157504",
+  "headers": [
+    {
+      "source": "/fonts.css",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000" }
+      ]
+    },
+    {
+      "source": "/_astro/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/fonts/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000" }
+      ]
+    },
+    {
+      "source": "/pagefind/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    },
+    {
+      "source": "/*.png",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000" }
+      ]
+    },
+    {
+      "source": "/*.webp",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000" }
+      ]
+    },
+    {
+      "source": "/*.svg",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=604800" }
+      ]
+    }
+  ],
+  "caches": [
+    { "source": "/fonts.css", "cacheTtl": 31536000 },
+    { "source": "/_astro/*", "cacheTtl": 31536000 },
+    { "source": "/fonts/*", "cacheTtl": 31536000 },
+    { "source": "/pagefind/*", "cacheTtl": 86400 },
+    { "source": "/*.png", "cacheTtl": 2592000 },
+    { "source": "/*.webp", "cacheTtl": 2592000 },
+    { "source": "/*.svg", "cacheTtl": 604800 }
+  ]
+}

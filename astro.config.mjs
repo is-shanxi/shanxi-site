@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // 站点绝对地址：仅构建期使用（sitemap / RSS / canonical）。
 // 运行时的站点元信息统一在 src/config.ts 中维护。
-const SITE_URL = process.env.SITE_URL ?? 'https://shanxi.dev';
+const SITE_URL = process.env.SITE_URL ?? 'https://mu-shanxi.cn';
 
 // https://astro.build/config
 export default defineConfig({
@@ -49,7 +49,9 @@ export default defineConfig({
   },
 
   build: {
-    inlineStylesheets: 'auto',
+    // 跨境访问场景下，外链 CSS 每次都是一次 300ms+ RTT 的渲染阻塞请求；
+    // 全量内联（~52KB，gzip 后更小）直接消除这次往返。
+    inlineStylesheets: 'always',
   },
 
   prefetch: {
