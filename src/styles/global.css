@@ -301,7 +301,7 @@
         transparent 62%
       ),
       /* 宫殿背景：插件 maid-atelier palace（日光水晶大厅） */
-      url('/skins/maid-atelier/palace-light.webp') center / cover no-repeat;
+      url('/skins/maid-atelier/palace-light-opt.webp') center / cover no-repeat;
     transition: opacity var(--dur-slow) var(--ease-soft);
   }
 
@@ -322,7 +322,7 @@
         transparent 64%
       ),
       /* 宫殿背景：插件 maid-atelier palace（深海夜） */
-      url('/skins/maid-atelier/palace-dark.webp') center / cover no-repeat;
+      url('/skins/maid-atelier/palace-dark-opt.webp') center / cover no-repeat;
   }
 
   h1,
